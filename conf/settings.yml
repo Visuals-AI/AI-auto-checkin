@@ -32,3 +32,4 @@ adb:
   check_in:                             # 签到
     - "input tap 543 2051"              # 步骤 1: 点击 APP 内功能按钮坐标
     - "input tap 896 849"               # 步骤 2: 点击打卡按钮坐标
+    - "input keyevent 223"              # 步骤 3: 锁屏
