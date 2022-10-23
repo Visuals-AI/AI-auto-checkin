@@ -24,25 +24,13 @@ class Config :
                 context = yaml.load(file.read())
 
                 self.app = context.get('app')
-                self.debug = self.app.get('debug')
-                self.sock = self.app.get('socket')
-                self.log = self.app.get('log')
+                self.on_work = int(self.app.get('on_work') or 0)
+                self.off_work = int(self.app.get('off_work') or 0)
+                self.checkin_interval = int(self.app.get('checkin_interval') or 0)
 
-                self.ctrl = context.get('controller')
-                screen = self.ctrl.get('screen')
-                self.screen_width = int(screen.get('width') or _SW)
-                self.screen_height = int(screen.get('height') or _SH)
-                self.screen_center = (int(self.screen_width / 2), int(self.screen_height / 2))
-                self.screen_zoom = int(screen.get('zoom'))
-                cropping = self.ctrl.get('cropping')
-                self.crop_width = cropping.get('width')
-                self.crop_height = cropping.get('height')
-                self.dpi = float(self.ctrl.get('mouse_dpi'))
-                self.aim_mode = self.ctrl.get('aim_mode')
-                windows = self.ctrl.get('windows')
-                offset = windows.get('offset')
-                self.offset_top = int(offset.get('top'))
-                self.offset_left = int(offset.get('left'))
+                self.mediapipe = context.get('mediapipe')
+                self.show_cv = self.mediapipe.get('show_cv')
+                self.frequency = max(0, int(self.mediapipe.get('frequency')))
 
                 device = context.get('video_capture_card')
                 self.dev_idx = int(device.get('index') or 0)
@@ -52,13 +40,12 @@ class Config :
                 self.frame_width = frame_size.get('width')
                 self.frame_height = frame_size.get('height')
 
-                self.openpose = context.get('openpose')
-                self.show_cv = self.openpose.get('show_cv')
-                self.frequency = max(0, int(self.openpose.get('frequency')))
-                self.model_folder = self.openpose.get('model_folder')
-                self.model_pose = self.openpose.get('model_pose')
-                self.part_names = self.openpose['parts'] or []
-
+                self.adb = context.get('adb')
+                self.cmd_interval = self.adb.get('cmd_interval')
+                self.unlock_screen = self.adb.get('unlock_screen')
+                self.open_app = self.adb.get('open_app')
+                self.check_in = self.adb.get('check_in')
+                
 
 SETTINGS = Config(SETTINGS_PATH, CHARSET)
 
