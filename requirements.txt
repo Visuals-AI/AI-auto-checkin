@@ -1,0 +1,5 @@
+argparse>=1.4.0
+py-color-log>=1.0.3
+pyyaml-erb>=1.0.4
+opencv-python==4.5.4.60
+mediapipe==0.8.11

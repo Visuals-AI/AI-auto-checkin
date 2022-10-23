@@ -1,0 +1,38 @@
+app:
+  debug: 'false'                # 调试模式
+  on_work: 9                    # 上班打卡开始时间（小时）
+  off_work: 18                  # 下班打卡开始时间（小时）
+  interval: 30                  # 打卡间隔（分钟）
+
+
+mediapipe:                      # flase 时，结束监听后无法关闭后台进程
+  show_cv: 'true'               # 绘制画面的总开关（包括识别前的原画面，和识别后的关键坐标画面），关闭后相当于在后台运行，可以适当提高一些帧率
+  frequency: 2                  # 识别图像时的频率，每隔 N 帧识别一次（0 表示每帧都识别，值越大画面延迟越小，一般 2 为正常速率）
+  model_folder: 'oplib/models'  # 训练后的人体姿态模型目录
+  model_pose: 'BODY_25'         # 使用的人体姿态模型：BODY_25（默认，目前只解析了 body25 的输出）、COCO、MPI、MPI_4_layers
+  parts:                        # 期望瞄准的部位优先级（若不能识别到该部位则向下顺移）
+    - 'NOSE'                    # 鼻子（即 头）
+    - 'NECK'                    # 脖子（即 身体）
+    - 'MIDHIP'                  # 屁股
+
+
+video_capture_card:             # 视频采集卡
+  index: 0                      # 设备索引号（默认 0）
+  fourcc: 'MJPG'                # 输入格式（4个字符表示的视频编码格式）
+  fps: 60                       # 输入帧速率
+  frame:                        # 每帧的输入尺寸（即 AI 得到的屏幕尺寸，可执行 get_camera_size.py 脚本获得）
+    width: 1366
+    height: 768
+
+
+adb:
+  unlock_screen:                        # 解锁屏幕步骤
+    - "input keyevent 224"              # 唤醒屏幕
+    - "input swipe 300 1000 300 500"    # 滑动屏幕，调出密码输入
+    - "input text <password>"           # 输入锁屏密码
+    - "input keyevent 3"                # 返回首页
+  open_app:                             # 打开用于签到的 APP
+    - "input tap 411 1387"              # 步骤 1: 点击 APP 分组坐标
+    - "input tap 800 706"               # 步骤 2: 点击目标 APP 坐标
+    - "input tap 543 2051"              # 步骤 3: 点击 APP 内功能按钮坐标
+    - "input tap 896 849"               # 步骤 4: 点击打卡按钮坐标
