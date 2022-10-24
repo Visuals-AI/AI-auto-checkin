@@ -21,6 +21,8 @@ video_capture_card:             # 视频采集卡
 
 adb:
   cmd_interval: 2                       # 命令执行间隔（秒）
+  keep_live:                            # 保活命令
+    - ""
   unlock_screen:                        # 解锁屏幕步骤
     - "input keyevent 224"              # 唤醒屏幕
     - "input swipe 300 1000 300 500"    # 滑动屏幕，调出密码输入
@@ -32,4 +34,5 @@ adb:
   check_in:                             # 签到
     - "input tap 543 2051"              # 步骤 1: 点击 APP 内功能按钮坐标
     - "input tap 896 849"               # 步骤 2: 点击打卡按钮坐标
-    - "input keyevent 223"              # 步骤 3: 锁屏
+  lock_screen:                          # 锁屏
+    - "input keyevent 223"              # 
