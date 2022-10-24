@@ -8,11 +8,10 @@
 import cv2
 import mediapipe as mp
 
-
-# 导入人脸识别模块
+# 导入绘图模块
 mp_drawing = mp.solutions.drawing_utils
 
-# 导入绘图模块
+# 导入人脸识别模块
 mp_face_mesh = mp.solutions.face_mesh
 
 # 自定义人脸识别方法
@@ -55,7 +54,7 @@ while cap.isOpened():
                 landmark_drawing_spec=drawing_spec,
                 connection_drawing_spec=drawing_spec1
             )
-    cv2.imshow('FaceMesh', image)
+    cv2.imshow('Mediapipe FaceMesh', image)
     if cv2.waitKey(5) & 0xFF == ord('q'):
         break
 face_mesh.close()
