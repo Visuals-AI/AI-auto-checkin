@@ -39,5 +39,7 @@ def main(args) :
     adb.exec(SETTINGS.check_in)
 
 
+
 if '__main__' == __name__ :
     main(args())
+

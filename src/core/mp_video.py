@@ -44,16 +44,16 @@ while cap.isOpened():
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    if results.multi_face_landmarks:
-        for face_landmarks in results.multi_face_landmarks:
-            mp_drawing.draw_landmarks(
-                image=image,
-                landmark_list=face_landmarks,
-                connections=mp_face_mesh.FACEMESH_TESSELATION,      # 连接线绘制完全网格，需要把那些坐标连接起来
-                # connections=mp_face_mesh.FACEMESH_CONTOURS,       # 仅连接外围边框，内部点不连接
-                landmark_drawing_spec=drawing_spec,
-                connection_drawing_spec=drawing_spec1
-            )
+    # if results.multi_face_landmarks:
+    #     for face_landmarks in results.multi_face_landmarks:
+    #         mp_drawing.draw_landmarks(
+    #             image=image,
+    #             landmark_list=face_landmarks,
+    #             connections=mp_face_mesh.FACEMESH_TESSELATION,      # 连接线绘制完全网格，需要把那些坐标连接起来
+    #             # connections=mp_face_mesh.FACEMESH_CONTOURS,       # 仅连接外围边框，内部点不连接
+    #             landmark_drawing_spec=drawing_spec,
+    #             connection_drawing_spec=drawing_spec1
+    #         )
     cv2.imshow('Mediapipe FaceMesh', image)
     if cv2.waitKey(5) & 0xFF == ord('q'):
         break
