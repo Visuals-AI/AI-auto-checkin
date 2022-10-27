@@ -23,3 +23,7 @@ def open_select_window(title="Please select one or more files:") :
         filetypes=FILETYPE
     )
     return filepaths
+
+
+def open_camera() :
+    return []

@@ -12,7 +12,7 @@ def c_feature(results) :
     :return: 这组坐标的特征向量（一组欧氏距离）
     '''
     coords = to_coords(results.multi_face_landmarks[0].landmark)
-    return c_dist(coords)
+    return _feature(coords)
 
 
 def to_coords(landmark) :
@@ -42,7 +42,7 @@ def get_z(each):
     return each.z
 
 
-def c_dist(coord) :
+def _feature(coord) :
     size = len(coord)
     dist = []
     for i in range(size - 1) :

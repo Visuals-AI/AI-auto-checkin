@@ -50,7 +50,8 @@ def record(args) :
     '''
     录入模式
     '''
-    return
+    from src.core.record_feature import get_feature
+    return get_feature()
 
 
 def recognise(args) :
