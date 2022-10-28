@@ -23,6 +23,10 @@ video_capture_card:             # 视频采集卡
 
 adb:
   cmd_interval: 2                       # 命令执行间隔（秒）
+  checkin: app1
+
+
+app1:
   keep_live:                            # 保活命令
     - ""
   unlock_screen:                        # 解锁屏幕步骤
@@ -38,3 +42,6 @@ adb:
     - "input tap 896 849"               # 步骤 2: 点击打卡按钮坐标
   lock_screen:                          # 锁屏
     - "input keyevent 223"              # 
+
+app2:
+  ......

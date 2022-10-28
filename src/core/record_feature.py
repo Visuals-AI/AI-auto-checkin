@@ -70,6 +70,8 @@ class RecordFace :
         :return: 统一尺寸的人脸图片对象
         '''
         results = self.face_mesh.process(image)      # 使用process方法对图片进行检测，此方法返回所有的人脸468个点的坐标
+        if not results.detections :
+            pass
         # TODO
         return image
 
