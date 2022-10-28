@@ -50,8 +50,11 @@ def record(args) :
     '''
     录入模式
     '''
-    from src.core.record_feature import get_feature
-    return get_feature()
+    from src.core.record_feature import RecordFace
+    rf = RecordFace()
+    rf.input_face(args.camera)
+
+    return
 
 
 def recognise(args) :
