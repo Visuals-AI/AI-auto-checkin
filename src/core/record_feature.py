@@ -10,8 +10,8 @@ import mediapipe as mp
 import numpy as np
 import shutil
 import uuid
+from color_log.clog import log
 from pypdm.dbc._sqlite import SqliteDBC
-from src import bean
 from src.bean.t_face_feature import TFaceFeature
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.upload_utils import *
@@ -64,59 +64,47 @@ class RecordFace :
             imgpaths = open_select_window(title='请选择个人特征照片')
         
         for imgpath in imgpaths :
-            self._save_features(imgpath)
+            image_id, frame_image = self._detecte_face(imgpath)
+            if frame_image is None :
+                log.error("未能识别到人脸: [%s]" % imgpath)
+                continue
+
+            
+            # self.calculate_features(frame_image)
 
 
-    def _save_features(self, imgpath) :
+    def _detecte_face(self, imgpath) :
         '''
         识别图片中的人像，保存特征值
         :param imgpath: 图片路径
-        :return: 
+        :return: (图像唯一ID:image_id, 方框人脸:frame_image)
         '''
-        
+        # 预处理上传/录制的图片参数
         filename = os.path.split(imgpath)[-1]
         name = os.path.splitext(filename)[0]
         suffix = os.path.splitext(filename)[-1]
-        image_id = uuid.uuid1().hex
+        image_id = uuid.uuid1().hex     # 随机分配图像 ID
         original_path = "%s/%s%s" % (SETTINGS.upload_dir, image_id, suffix)
         shutil.copyfile(imgpath, original_path)
 
-
-        # 识别图像，框取人脸
-        # 裁剪、缩放图像，按一致大小保留人脸图片
-        # 重新识别图像，计算特征值 -> 图片名 关系
+        # 从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
         image = cv2.imread(original_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 图片转换到 RGB 空间
         frame_image = self._frame_face(image)
 
-
+        # 保存方框人像数据
         feature_path = "%s/%s%s" % (SETTINGS.feature_dir, image_id, SETTINGS.feature_fmt)
         cv2.imwrite(feature_path, frame_image)
-        self._save_features_to_db(name, image_id, original_path, feature_path)
-
-        # self.calculate_features(frame_image)
-
-
-    def _save_features_to_db(self, name, image_id, original_image_path, feature_image_path) :
-        sdbc = SqliteDBC(options=SETTINGS.database)
-        sdbc.conn()
-        dao = TFaceFeatureDao()
+        self._save_face(name, image_id, original_path, feature_path)
+        return (image_id, frame_image)
         
-        bean = TFaceFeature()
-        bean.name = name
-        bean.image_id = image_id
-        bean.original_image_path = original_image_path
-        bean.feature_image_path = feature_image_path
-
-        dao.insert(sdbc, bean)
-        sdbc.close()
 
 
     def _frame_face(self, image) :
         '''
-        识别图像，框取人脸，按统一尺寸裁剪、缩放图像到人脸范围
-        :param image: 原始图片对象
-        :return: 统一尺寸的人脸图片对象
+        从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
+        :param image: 原始图像
+        :return: frame_image 统一尺寸的人脸图像; 若检测失败返回 None
         '''
         frame_image = None
         results = self.face_detection.process(image)
@@ -148,6 +136,29 @@ class RecordFace :
             cv2.imshow('Preview Frame Face', annotated_image)
             cv2.waitKey(0)
         return frame_image
+
+
+    def _save_face(self, name, image_id, original_image_path, feature_image_path) :
+        '''
+        保存人脸数据
+        :param name: 图像名称（默认为文件名）
+        :param image_id: 图像 ID（默认自动分配）
+        :param original_image_path: 原始上传/录制的图片路径
+        :param feature_image_path: 方框检测到、并裁剪缩放后的人脸图片
+        :return: None
+        '''
+        sdbc = SqliteDBC(options=SETTINGS.database)
+        sdbc.conn()
+        dao = TFaceFeatureDao()
+        
+        bean = TFaceFeature()
+        bean.name = name
+        bean.image_id = image_id
+        bean.original_image_path = original_image_path
+        bean.feature_image_path = feature_image_path
+
+        dao.insert(sdbc, bean)
+        sdbc.close()
 
 
     def calculate_features(self, image) :
