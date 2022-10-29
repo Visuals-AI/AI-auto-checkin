@@ -4,9 +4,10 @@
 
 import argparse
 from pypdm.dbc._sqlite import SqliteDBC
-from src.config import SETTINGS
+from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_detection import FaceDetection
 from src.core import adb
+from src.config import SETTINGS
 
 
 def args() :
@@ -20,9 +21,9 @@ def args() :
             '....'
         ])
     )
-    parser.add_argument('-r', '--record', dest='record', action='store_true', default=False, help='录入模式: 用于录入人脸特征点; 默认为识别模式')
+    parser.add_argument('-r', '--record', dest='record', action='store_true', default=False, help='录入模式: 用于录入人脸特征点; 默认为匹配模式')
     parser.add_argument('-c', '--camera', dest='camera', action='store_true', default=False, help='仅[录入模式]有效: 摄像头录入方式; 默认为图片录入方式')
-    parser.add_argument('-p', '--password', dest='password', type=str, default='123456', help='仅[识别模式]有效: 手机的锁屏密码')
+    parser.add_argument('-p', '--password', dest='password', type=str, default='123456', help='仅[匹配模式]有效: 手机的锁屏密码')
     return parser.parse_args()
 
 
@@ -57,18 +58,19 @@ def record(args) :
 
 def recognise(args) :
     '''
-    识别模式
+    匹配模式
     '''
-    adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
-    adb.exec(SETTINGS.open_app)
-    adb.exec(SETTINGS.check_in)
+    FACE_FEATURE_CACHE.load_all()
+    print(FACE_FEATURE_CACHE.id_features)
+    # adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
+    # adb.exec(SETTINGS.open_app)
+    # adb.exec(SETTINGS.check_in)
 
 
 
 def init() :
     sdbc = SqliteDBC(options=SETTINGS.database)
     sdbc.exec_script(SETTINGS.sqlpath)
-
 
 
 if '__main__' == __name__ :

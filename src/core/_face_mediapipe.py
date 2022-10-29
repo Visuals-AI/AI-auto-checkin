@@ -10,9 +10,7 @@ from color_log.clog import log
 from pypdm.dbc._sqlite import SqliteDBC
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.upload_utils import *
-from src.utils.image_utils import *
-from src.utils.math_utils import *
-from src.config import SETTINGS
+from src.config import SETTINGS, FEATURE_SPLIT
 
 
 class FaceMediapipe :
@@ -28,7 +26,6 @@ class FaceMediapipe :
         :param min_detection_confidence: 人脸检测模型的最小置信度值
         :param min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
-        self.SPLIT = ", "                                           # 特征值格式转换分隔符
         self.MAX_NUM_FACES = 1                                      # 检测人脸个数，此场景下只取 1 个人脸
         self.mp_drawing = mp.solutions.drawing_utils                # 导入绘制辅助标记的工具（此为 mediapipe 的，不是 opencv 的）
         self.resize_face = (SETTINGS.face_width, SETTINGS.face_height)
@@ -172,14 +169,5 @@ class FaceMediapipe :
         :param feature: 特征值
         :return: 字符串
         '''
-        return self.SPLIT.join(str(v) for v in feature)
+        return FEATURE_SPLIT.join(str(v) for v in feature)
 
-
-    def _str_to_feature(self, s_feature) :
-        '''
-        字符串 转 特征值（复数数组）
-        :param s_feature: 特征值字符串
-        :return: 特征值（复数数组）
-        '''
-        s_floats = s_feature.split(self.SPLIT)
-        return list(complex(v) for v in s_floats)

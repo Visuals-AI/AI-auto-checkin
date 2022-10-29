@@ -8,6 +8,7 @@ import shutil
 from color_log.clog import log
 from src.bean.t_face_feature import TFaceFeature
 from src.core._face_mediapipe import FaceMediapipe
+from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.utils.upload_utils import *
 from src.config import SETTINGS
 
@@ -121,10 +122,15 @@ class FaceDetection(FaceMediapipe) :
         '''
         is_ok = True
         try :
+            # 添加到数据库
             self.sdbc.conn()
             cache_data.feature = self._feature_to_str(feature)
             self.dao.insert(self.sdbc, cache_data)
             self.sdbc.close()
+
+            # 添加到缓存
+            FACE_FEATURE_CACHE.add(cache_data)
+
         except :
             is_ok = False
             log.error("保存人脸特征数据到数据库失败")
