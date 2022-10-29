@@ -28,6 +28,7 @@ class Config :
                 self.tmp_dir = self.app.get('tmp_dir')
                 self.upload_dir = self.app.get('upload_dir')
                 self.feature_dir = self.app.get('feature_dir')
+                self.feature_fmt = self.app.get('feature_fmt')
                 self.on_work = int(self.app.get('on_work') or 0)
                 self.off_work = int(self.app.get('off_work') or 0)
                 self.checkin_interval = int(self.app.get('checkin_interval') or 0)

@@ -25,7 +25,7 @@ def init() :
 def generate_pdm(sdbc) :
     paths = build(
         dbc = sdbc,
-        pdm_pkg = 'src.bean',
+        pdm_pkg = 'src',
         table_whitelist = [ 't_face_feature' ],
         table_blacklist = [],
         to_log = True

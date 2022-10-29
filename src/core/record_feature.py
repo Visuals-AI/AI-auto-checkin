@@ -10,6 +10,10 @@ import mediapipe as mp
 import numpy as np
 import shutil
 import uuid
+from pypdm.dbc._sqlite import SqliteDBC
+from src import bean
+from src.bean.t_face_feature import TFaceFeature
+from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.upload_utils import *
 from src.utils.image_utils import *
 from src.utils.math_utils import c_feature
@@ -59,19 +63,8 @@ class RecordFace :
         else :
             imgpaths = open_select_window(title='请选择个人特征照片')
         
-        for srcpath in imgpaths :
-            filename = os.path.splitext(srcpath)[0]
-            filesuffix = os.path.splitext(srcpath)[-1]
-            snkpath = "%s/%s%s" % (SETTINGS.tmp_dir, uuid.uuid1().hex, filesuffix)
-            shutil.copyfile(srcpath, snkpath)
-            self._save_features(snkpath)
-            # os.remove(snkpath)
-
-
-    def _fix_image_path(self, imgpath) :
-        root_dir, filename = os.path.split(imgpath)
-
-        return SETTINGS.tmp_dir + filename
+        for imgpath in imgpaths :
+            self._save_features(imgpath)
 
 
     def _save_features(self, imgpath) :
@@ -80,13 +73,43 @@ class RecordFace :
         :param imgpath: 图片路径
         :return: 
         '''
+        
+        filename = os.path.split(imgpath)[-1]
+        name = os.path.splitext(filename)[0]
+        suffix = os.path.splitext(filename)[-1]
+        image_id = uuid.uuid1().hex
+        original_path = "%s/%s%s" % (SETTINGS.upload_dir, image_id, suffix)
+        shutil.copyfile(imgpath, original_path)
+
+
         # 识别图像，框取人脸
         # 裁剪、缩放图像，按一致大小保留人脸图片
         # 重新识别图像，计算特征值 -> 图片名 关系
-        image = cv2.imread(imgpath)
+        image = cv2.imread(original_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 图片转换到 RGB 空间
         frame_image = self._frame_face(image)
+
+
+        feature_path = "%s/%s%s" % (SETTINGS.feature_dir, image_id, SETTINGS.feature_fmt)
+        cv2.imwrite(feature_path, frame_image)
+        self._save_features_to_db(name, image_id, original_path, feature_path)
+
         # self.calculate_features(frame_image)
+
+
+    def _save_features_to_db(self, name, image_id, original_image_path, feature_image_path) :
+        sdbc = SqliteDBC(options=SETTINGS.database)
+        sdbc.conn()
+        dao = TFaceFeatureDao()
+        
+        bean = TFaceFeature()
+        bean.name = name
+        bean.image_id = image_id
+        bean.original_image_path = original_image_path
+        bean.feature_image_path = feature_image_path
+
+        dao.insert(sdbc, bean)
+        sdbc.close()
 
 
     def _frame_face(self, image) :
@@ -117,14 +140,12 @@ class RecordFace :
                 self.resize_face, 
                 interpolation=cv2.INTER_CUBIC
             )
-        cv2.imwrite('./data/tmp/frame_image.png', frame_image)
 
         # 绘制检测到的人脸方框
-        print(SETTINGS.debug)
         if SETTINGS.debug :
             annotated_image = image.copy()
             self.mp_drawing.draw_detection(annotated_image, detection)
-            cv2.imshow('录入人脸-方框标注', annotated_image)
+            cv2.imshow('Preview Frame Face', annotated_image)
             cv2.waitKey(0)
         return frame_image
 

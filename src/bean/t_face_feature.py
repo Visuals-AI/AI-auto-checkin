@@ -7,6 +7,7 @@
 class TFaceFeature :
     table_name = 't_face_feature'
     i_id = "i_id"
+    s_image_id = "s_image_id"
     s_name = "s_name"
     f_feature = "f_feature"
     s_original_image_path = "s_original_image_path"
@@ -15,6 +16,7 @@ class TFaceFeature :
 
     def __init__(self) :
         self.id = None
+        self.image_id = None
         self.name = None
         self.feature = None
         self.original_image_path = None
@@ -23,6 +25,7 @@ class TFaceFeature :
 
     def params(self) :
         return (
+            self.image_id,
             self.name,
             self.feature,
             self.original_image_path,
@@ -35,6 +38,7 @@ class TFaceFeature :
             (
                 '%s: {' % self.table_name,
                 "    %s = %s" % (self.i_id, self.id),
+                "    %s = %s" % (self.s_image_id, self.image_id),
                 "    %s = %s" % (self.s_name, self.name),
                 "    %s = %s" % (self.f_feature, self.feature),
                 "    %s = %s" % (self.s_original_image_path, self.original_image_path),
