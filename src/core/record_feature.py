@@ -119,9 +119,13 @@ class RecordFace :
             )
         cv2.imwrite('./data/tmp/frame_image.png', frame_image)
 
-        # annotated_image = image.copy()
-        # self.mp_drawing.draw_detection(annotated_image, detection)
-
+        # 绘制检测到的人脸方框
+        print(SETTINGS.debug)
+        if SETTINGS.debug :
+            annotated_image = image.copy()
+            self.mp_drawing.draw_detection(annotated_image, detection)
+            cv2.imshow('录入人脸-方框标注', annotated_image)
+            cv2.waitKey(0)
         return frame_image
 
 

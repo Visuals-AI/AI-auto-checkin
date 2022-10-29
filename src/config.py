@@ -24,13 +24,16 @@ class Config :
                 context = yaml.load(file.read())
 
                 self.app = context.get('app')
-                self.debug = True if context.get('debug') == 'true' else False
+                self.debug = self.app.get('debug')
                 self.tmp_dir = self.app.get('tmp_dir')
                 self.upload_dir = self.app.get('upload_dir')
                 self.feature_dir = self.app.get('feature_dir')
                 self.on_work = int(self.app.get('on_work') or 0)
                 self.off_work = int(self.app.get('off_work') or 0)
                 self.checkin_interval = int(self.app.get('checkin_interval') or 0)
+
+                self.database = context.get('database')
+                self.sqlpath = self.database.get('sqlpath')
 
                 self.mediapipe = context.get('mediapipe')
                 self.show_cv = self.mediapipe.get('show_cv')

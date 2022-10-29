@@ -3,7 +3,7 @@
 # -----------------------------------------------
 
 import argparse
-from ast import arg
+from pypdm.dbc._sqlite import SqliteDBC
 from src.config import SETTINGS
 from src.core import adb
 
@@ -65,5 +65,13 @@ def recognise(args) :
     adb.exec(SETTINGS.check_in)
 
 
+
+def init() :
+    sdbc = SqliteDBC(options=SETTINGS.database)
+    sdbc.exec_script(SETTINGS.sqlpath)
+
+
+
 if '__main__' == __name__ :
+    init()
     main(args())

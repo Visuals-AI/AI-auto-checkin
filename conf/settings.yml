@@ -7,6 +7,10 @@ app:
   off_work: 18                  # 下班打卡开始时间（小时）
   checkin_interval: 30          # 打卡间隔（分钟）
 
+database:
+  dbtype: 'sqlite'
+  dbpath: './data/db/ai-checkin.db'
+  sqlpath: './data/script/ai-checkin-create.sql'
 
 mediapipe:                      # flase 时，结束监听后无法关闭后台进程
   show_cv: 'true'               # 绘制画面的总开关（包括识别前的原画面，和识别后的关键坐标画面），关闭后相当于在后台运行，可以适当提高一些帧率
