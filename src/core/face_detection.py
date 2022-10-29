@@ -33,7 +33,7 @@ class FaceDetection(FaceMediapipe) :
     
     def input_face(self, camera=False) :
         '''
-        录入人脸图片，计算特征值
+        录入人脸图像，计算特征值
         :param camera: 录入模式:  True:摄像头; False:上传图片
         :return: 录入成功的人脸数
         '''
@@ -41,24 +41,24 @@ class FaceDetection(FaceMediapipe) :
         if camera == True :
             imgpaths = open_camera()
         else :
-            imgpaths = open_select_window(title='请选择个人特征照片')
+            imgpaths = open_select_multi_window(title='请选择需要录入特征库的照片')
         
         cnt = 0
         for imgpath in imgpaths :
             frame_image, cache_data = self._detecte_face(imgpath)
             if frame_image is None :
-                log.error("未能识别到人脸: [%s]" % imgpath)
+                log.warn("未能识别到人脸，请重新录入: [%s]" % imgpath)
                 continue
             
             feature = self.calculate_feature(frame_image)
             if not feature :
-                log.error("计算人脸特征值失败: [%s]" % imgpath)
+                log.warn("计算人脸特征值失败: [%s]" % imgpath)
                 continue
 
             else :
                 cnt += 1
                 self._save_feature(feature, cache_data)
-                log.info("已保存特征值: %s" % feature)
+                log.info("已保存特征值: [%s ... %s]" % (feature[0], feature[-1]))
 
         log.info("成功录入 [%d/%d] 张人脸数据" % (cnt, len(imgpaths)))
         return cnt
@@ -79,7 +79,7 @@ class FaceDetection(FaceMediapipe) :
         image_id = self._gen_image_id()
         original_path = "%s/%s%s" % (SETTINGS.upload_dir, image_id, suffix)
         shutil.copyfile(imgpath, original_path)
-        log.info("已上传人脸图片: %s" % original_path)
+        log.info("已接收人脸图片: %s" % original_path)
 
         # 从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
         image = cv2.imread(original_path)
@@ -92,9 +92,6 @@ class FaceDetection(FaceMediapipe) :
             cv2.imwrite(feature_path, frame_image)
             cache_data = self._save_face(name, image_id, original_path, feature_path)
             log.info("检测到人脸位置，已生成特征图片: %s" % feature_path)
-
-        else :
-            log.warn("无法检测到人脸位置，请重新录入")
         return (frame_image, cache_data)
 
 

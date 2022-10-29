@@ -112,30 +112,23 @@ class FaceMediapipe :
         return (width, height)
 
 
-    def calculate_feature(self, image=None, landmark=None) :
+    def calculate_feature(self, image) :
         '''
         计算人脸特征值
         :param image: 统一尺寸的人脸图片对象
-        :param landmark: 人脸特征点的地标集
         :return: 特征值
         '''
         feature = []
         log.info("开始计算人脸特征值 ...")
 
-        if landmark is None :
+        # 使用 face_mesh 计算人脸 468 个点的三维地标（坐标是归一化的）
+        results = self.face_mesh.process(image)
+        if not results.multi_face_landmarks:
+            log.warn("拟合人脸网格失败")
+            return feature
 
-            # 使用 face_mesh 计算人脸 468 个点的三维地标（坐标是归一化的）
-            results = self.face_mesh.process(image)
-            if not results.multi_face_landmarks:
-                log.warn("拟合人脸网格失败")
-                return feature
-
-            coords = self._to_coords(results.multi_face_landmarks[0].landmark)
-            feature = self._to_feature(coords)
-
-        else :
-            coords = self._to_coords(landmark)
-            feature = self._to_feature(coords)
+        coords = self._to_coords(results.multi_face_landmarks[0].landmark)
+        feature = self._to_feature(coords)
         return feature
 
 
@@ -148,9 +141,9 @@ class FaceMediapipe :
         points = np.array(landmark)
 
         # 分别获取特征点 (x,y,z) 坐标
-        points_x = np.array(list(v.x for v in points))
-        points_y = np.array(list(v.y for v in points))
-        points_z = np.array(list(v.z for v in points))
+        points_x = np.array(list(p.x for p in points))
+        points_y = np.array(list(p.y for p in points))
+        points_z = np.array(list(p.z for p in points))
 
         # 将三个方向坐标合并
         coords = np.vstack((points_x, points_y, points_z)).T

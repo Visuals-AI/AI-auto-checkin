@@ -15,12 +15,22 @@ FILETYPE = [
 ]
 
 
-# 请求选择一个或多个文件
-def open_select_window(title="Please select one or more files:") :
+# 请求选择一个文件
+def open_select_one_window(title="Please select one file:") :
     filepaths = filedialog.askopenfilenames(
-        initialdir=os.getcwd(),
-        title=title,
-        filetypes=FILETYPE
+        initialdir = os.getcwd(),
+        title = title,
+        filetypes = FILETYPE
+    )
+    return filepaths
+
+
+# 请求选择一个或多个文件
+def open_select_multi_window(title="Please select one or more files:") :
+    filepaths = filedialog.askopenfilenames(
+        initialdir = os.getcwd(),
+        title = title,
+        filetypes = FILETYPE
     )
     return filepaths
 
