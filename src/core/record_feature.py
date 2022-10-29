@@ -9,41 +9,42 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import shutil
-from src.utils.upload import open_camera, open_select_window
-from src.utils.math import c_feature
-
+from src.utils.upload_utils import *
+from src.utils.cv_utils import *
+from src.utils.math_utils import c_feature
+from src.config import SETTINGS
 
 
 class RecordFace :
 
     def __init__(self, 
-        model_selection=0, 
-        static_image_mode=False, max_num_faces=1, 
+        model_selection=0, static_image_mode=False, 
         min_detection_confidence=0.5, min_tracking_confidence=0.5
     ) -> None:
         '''
         构造函数
         :param model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
         :param static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
-        :param max_num_faces: 检测人脸个数
         :param min_detection_confidence: 人脸检测模型的最小置信度值
         :param min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
-        self.mp_face_detection = mp.solutions.face_detection         # 导入人脸检测模块
+        self.MAX_NUM_FACES = 1                                      # 检测人脸个数，此场景下只取 1 个人脸
+        self.mp_drawing = mp.solutions.drawing_utils                # 导入绘制辅助标记的工具（此为 mediapipe 的，不是 opencv 的）
+        self.resize_face = (SETTINGS.face_width, SETTINGS.face_height)
+
+        self.mp_face_detection = mp.solutions.face_detection        # 导入人脸检测模块
         self.face_detection = self.mp_face_detection.FaceDetection(
             model_selection = model_selection, 
             min_detection_confidence = min_detection_confidence
         )
 
-        self.mp_face_mesh = mp.solutions.face_mesh                   # 导入人脸识别模块
-        self.face_mesh = self.mp_face_mesh.FaceMesh(                 # 定义一个 mesh 人脸检测器
+        self.mp_face_mesh = mp.solutions.face_mesh                  # 导入人脸识别模块
+        self.face_mesh = self.mp_face_mesh.FaceMesh(                # 定义一个 mesh 人脸检测器
             static_image_mode = static_image_mode,         
-            max_num_faces = max_num_faces,
+            max_num_faces = self.MAX_NUM_FACES,
             min_detection_confidence = min_detection_confidence,
             min_tracking_confidence = min_tracking_confidence
         )
-
-        self.mp_drawing = mp.solutions.drawing_utils
 
     
     def input_face(self, camera=False) :
@@ -87,60 +88,34 @@ class RecordFace :
         :param image: 原始图片对象
         :return: 统一尺寸的人脸图片对象
         '''
-        size = image.shape
-        w = size[1] #宽度
-        h = size[0] #高度
-        print(w)
-        print(h)
-
+        frame_image = None
         results = self.face_detection.process(image)
         if not results.detections:
-            return
-        annotated_image = image.copy()
-        for detection in results.detections:
-            # print("============")
-            # print(detection)
-            
-            location_data = detection.location_data
-            if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
-                bb = location_data.relative_bounding_box
-                bb_box = [bb.xmin, bb.ymin, bb.width, bb.height]
-                print(f"RBBox: {bb_box}")
+            return frame_image
 
-                left = int(bb.xmin * w)
-                upper = int(bb.ymin * h)
-                right = int((bb.xmin + bb.width) * w)
-                down = int((bb.ymin + bb.height) * h)
-                print(left)
-                print(upper)
-                print(right)
-                print(down)
-                corp = annotated_image[upper:down, left:right]
+        detection = results.detections[0]   # 此场景下只取 1 个人脸
+        location_data = detection.location_data
+        if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
+            box = location_data.relative_bounding_box   # 得到检测到人脸位置的方框标记（位置是归一化的）
+            width, height = get_shape_size(image)         # 原图的宽高
 
+            # 计算人脸方框的原始坐标
+            left = int(box.xmin * width)
+            upper = int(box.ymin * height)
+            right = int((box.xmin + box.width) * width)
+            down = int((box.ymin + box.height) * height)
 
-                annotated_image = cv2.resize(corp, (512, 512), interpolation=cv2.INTER_CUBIC)
-                size = annotated_image.shape
-                w = size[1] #宽度
-                h = size[0] #高度
-                print(w)
-                print(h)
+            corp_image = image[upper:down, left:right]  # 裁剪图像，仅保留方框人脸部分
+            frame_image = cv2.resize(corp_image, 
+                self.resize_face, 
+                interpolation=cv2.INTER_CUBIC
+            )
+        cv2.imwrite('./data/tmp/frame_image.png', frame_image)
 
-            """The enum type of the six face detection key points.
-            RIGHT_EYE = 0
-            LEFT_EYE = 1
-            NOSE_TIP = 2
-            MOUTH_CENTER = 3
-            RIGHT_EAR_TRAGION = 4
-            LEFT_EAR_TRAGION = 5
-            """
-            # print('Nose tip:')
-            # print(self.mp_face_detection.get_key_point(detection, self.mp_face_detection.FaceKeyPoint.NOSE_TIP))
-            # Nose tip:
-            # x: 0.3519737124443054
-            # y: 0.4148605167865753
-            # self.mp_drawing.draw_detection(annotated_image, detection)
-        cv2.imwrite('./data/tmp/annotated_image.png', annotated_image)
-        return image
+        # annotated_image = image.copy()
+        # self.mp_drawing.draw_detection(annotated_image, detection)
+        
+        return frame_image
 
 
     def calculate_features(self, image) :

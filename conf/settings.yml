@@ -1,5 +1,5 @@
 app:
-  debug: 'false'                # 调试模式
+  debug: 'true'                # 调试模式
   upload_dir: './data/upload'   # 存储拍摄/上传原始图片的目录
   feature_dir: './data/feature' # 初步加工原始图片、得到统一规格的图片存储目录
   on_work: 9                    # 上班打卡开始时间（小时）
@@ -10,6 +10,9 @@ app:
 mediapipe:                      # flase 时，结束监听后无法关闭后台进程
   show_cv: 'true'               # 绘制画面的总开关（包括识别前的原画面，和识别后的关键坐标画面），关闭后相当于在后台运行，可以适当提高一些帧率
   frequency: 2                  # 识别图像时的频率，每隔 N 帧识别一次（0 表示每帧都识别，值越大画面延迟越小，一般 2 为正常速率）
+  resize_face:                  # 录入人脸时，框取人脸部分并调整保存的尺寸
+    width: 512
+    height: 512
 
 
 video_capture_card:             # 视频采集卡

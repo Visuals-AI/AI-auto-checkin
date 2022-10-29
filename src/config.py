@@ -24,6 +24,9 @@ class Config :
                 context = yaml.load(file.read())
 
                 self.app = context.get('app')
+                self.debug = True if context.get('debug') == 'true' else False
+                self.upload_dir = self.app.get('upload_dir')
+                self.feature_dir = self.app.get('feature_dir')
                 self.on_work = int(self.app.get('on_work') or 0)
                 self.off_work = int(self.app.get('off_work') or 0)
                 self.checkin_interval = int(self.app.get('checkin_interval') or 0)
@@ -31,6 +34,9 @@ class Config :
                 self.mediapipe = context.get('mediapipe')
                 self.show_cv = self.mediapipe.get('show_cv')
                 self.frequency = max(0, int(self.mediapipe.get('frequency')))
+                resize_face = self.mediapipe.get('resize_face')
+                self.face_width = resize_face.get('width')
+                self.face_height = resize_face.get('height')
 
                 device = context.get('video_capture_card')
                 self.dev_idx = int(device.get('index') or 0)
