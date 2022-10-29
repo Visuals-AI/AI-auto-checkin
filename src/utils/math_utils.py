@@ -4,6 +4,17 @@
 
 import numpy as np
 
+SPLIT = ", "
+
+
+def feature_to_str(feature) :
+    return SPLIT.join(str(v) for v in feature)
+
+
+def str_to_feature(s_feature) :
+    s_floats = s_feature.split(SPLIT)
+    return [complex(v) for v in s_floats]
+
 
 def c_feature(results) :
     '''
@@ -51,8 +62,8 @@ def _feature(coord) :
         d = np.linalg.norm(a - b)
         dist.append(d)
 
-    # a = coord[size - 1]
-    # b = coord[0]
-    # d = np.linalg.norm(a - b)
-    # dist.append(d)
+    a = coord[size - 1]
+    b = coord[0]
+    d = np.linalg.norm(a - b)
+    dist.append(d)
     return np.array(dist)

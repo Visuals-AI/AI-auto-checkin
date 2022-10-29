@@ -2,22 +2,20 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------
 
-# https://www.toutiao.com/article/6913754944206258696/?app=news_article&timestamp=1666621808&use_new_style=1&req_id=202210242230080102121621361C58653B&group_id=6913754944206258696&wxshare_count=1&tt_from=weixin&utm_source=weixin&utm_medium=toutiao_android&utm_campaign=client_share&share_token=2903d457-7d99-47f1-bce3-1787abde8660&source=m_redirect&wid=1666629121540
-
 import os
 import cv2
-import mediapipe as mp
-import numpy as np
 import shutil
 import uuid
+import mediapipe as mp
 from color_log.clog import log
 from pypdm.dbc._sqlite import SqliteDBC
 from src.bean.t_face_feature import TFaceFeature
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.upload_utils import *
 from src.utils.image_utils import *
-from src.utils.math_utils import c_feature
+from src.utils.math_utils import c_feature, feature_to_str
 from src.config import SETTINGS
+import numpy as np
 
 
 class RecordFace :
@@ -36,6 +34,8 @@ class RecordFace :
         self.MAX_NUM_FACES = 1                                      # 检测人脸个数，此场景下只取 1 个人脸
         self.mp_drawing = mp.solutions.drawing_utils                # 导入绘制辅助标记的工具（此为 mediapipe 的，不是 opencv 的）
         self.resize_face = (SETTINGS.face_width, SETTINGS.face_height)
+        self.sdbc = SqliteDBC(options=SETTINGS.database)
+        self.dao = TFaceFeatureDao()
 
         self.mp_face_detection = mp.solutions.face_detection        # 导入人脸检测模块
         self.face_detection = self.mp_face_detection.FaceDetection(
@@ -58,49 +58,56 @@ class RecordFace :
         :param camera: 录入模式:  True:摄像头; False:上传图片
         :return: 是否录入成功
         '''
+        log.info("请%s人脸图像，用于生成特征值 ..." % ("录制" if camera else "上传"))
         if camera == True :
             imgpaths = open_camera()
         else :
             imgpaths = open_select_window(title='请选择个人特征照片')
         
         for imgpath in imgpaths :
-            image_id, frame_image = self._detecte_face(imgpath)
+            frame_image, cache_data = self._detecte_face(imgpath)
             if frame_image is None :
                 log.error("未能识别到人脸: [%s]" % imgpath)
                 continue
-
-            
-            # self.calculate_features(frame_image)
+            self.calculate_feature(frame_image, cache_data)
 
 
     def _detecte_face(self, imgpath) :
         '''
         识别图片中的人像，保存特征值
         :param imgpath: 图片路径
-        :return: (图像唯一ID:image_id, 方框人脸:frame_image)
+        :return: (方框人脸:frame_image, 人脸缓存数据:cache_data)
         '''
+        log.info("开始检测图片中的人脸 ...")
+
         # 预处理上传/录制的图片参数
         filename = os.path.split(imgpath)[-1]
         name = os.path.splitext(filename)[0]
         suffix = os.path.splitext(filename)[-1]
-        image_id = uuid.uuid1().hex     # 随机分配图像 ID
+        image_id = uuid.uuid1().hex                     # 随机分配图像 ID
         original_path = "%s/%s%s" % (SETTINGS.upload_dir, image_id, suffix)
         shutil.copyfile(imgpath, original_path)
+        log.info("已上传人脸图片: %s" % original_path)
 
         # 从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
         image = cv2.imread(original_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 图片转换到 RGB 空间
-        frame_image = self._frame_face(image)
+        frame_image = self._to_box_face(image)
 
         # 保存方框人像数据
-        feature_path = "%s/%s%s" % (SETTINGS.feature_dir, image_id, SETTINGS.feature_fmt)
-        cv2.imwrite(feature_path, frame_image)
-        self._save_face(name, image_id, original_path, feature_path)
-        return (image_id, frame_image)
+        if frame_image is not None :
+            feature_path = "%s/%s%s" % (SETTINGS.feature_dir, image_id, SETTINGS.feature_fmt)
+            cv2.imwrite(feature_path, frame_image)
+            cache_data = self._save_face(name, image_id, original_path, feature_path)
+            log.info("检测到人脸位置，已生成特征图片: %s" % feature_path)
+
+        else :
+            log.warn("无法检测到人脸位置，请重新录入")
+        return (frame_image, cache_data)
         
 
 
-    def _frame_face(self, image) :
+    def _to_box_face(self, image) :
         '''
         从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
         :param image: 原始图像
@@ -111,11 +118,11 @@ class RecordFace :
         if not results.detections:
             return frame_image
 
-        detection = results.detections[0]   # 此场景下只取 1 个人脸
+        detection = results.detections[0]               # 此场景下只取 1 个人脸
         location_data = detection.location_data
         if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
-            box = location_data.relative_bounding_box   # 得到检测到人脸位置的方框标记（位置是归一化的）
-            width, height = get_shape_size(image)         # 原图的宽高
+            box = location_data.relative_bounding_box   # 得到检测到人脸位置的方框标记（坐标是归一化的）
+            width, height = get_shape_size(image)       # 原图的宽高
 
             # 计算人脸方框的原始坐标
             left = int(box.xmin * width)
@@ -140,33 +147,83 @@ class RecordFace :
 
     def _save_face(self, name, image_id, original_image_path, feature_image_path) :
         '''
-        保存人脸数据
+        缓存人脸数据
         :param name: 图像名称（默认为文件名）
         :param image_id: 图像 ID（默认自动分配）
         :param original_image_path: 原始上传/录制的图片路径
         :param feature_image_path: 方框检测到、并裁剪缩放后的人脸图片
-        :return: None
+        :return: TFaceFeature
         '''
-        sdbc = SqliteDBC(options=SETTINGS.database)
-        sdbc.conn()
-        dao = TFaceFeatureDao()
-        
         bean = TFaceFeature()
         bean.name = name
         bean.image_id = image_id
         bean.original_image_path = original_image_path
         bean.feature_image_path = feature_image_path
-
-        dao.insert(sdbc, bean)
-        sdbc.close()
+        return bean
 
 
-    def calculate_features(self, image) :
+    def calculate_feature(self, image, cache_data) :
         '''
-        计算并保存特征值，建立 特征值 -> 图片名 的关系
+        计算人脸特征值
         :param image: 统一尺寸的人脸图片对象
-        :return: 特征值 -> 图片名
+        :param cache_data: 人脸缓存数据
+        :return: 特征值
         '''
-        results = self.face_mesh.process(image) # 使用process方法对图片进行检测，此方法返回所有的人脸468个点的坐标
-        return c_feature(results)
+        feature = []
+        log.info("开始计算人脸特征值 ...")
+        results = self.face_mesh.process(image)         # 使用 face_mesh 计算人脸 468 个点的三维坐标（坐标是归一化的）
+        if not results.multi_face_landmarks:
+            return feature
 
+        coords = self._to_coords(results.multi_face_landmarks[0].landmark)
+        feature = self._to_feature(coords)
+        self._save_feature(feature, cache_data)
+        log.info("已保存特征值: %s" % feature)
+        return feature
+
+
+    def _to_coords(self, landmark) :
+        '''
+        把 人脸特征点的地标 转换为 (x,y,z) 坐标数组
+        :param landmark: 人脸特征点的地标
+        :return: (x,y,z) 坐标数组（归一化）
+        '''
+        points = np.array(landmark)
+
+        # 分别获取特征点 (x,y,z) 坐标
+        points_x = np.array(list(v.x for v in points))
+        points_y = np.array(list(v.y for v in points))
+        points_z = np.array(list(v.z for v in points))
+
+        # 将三个方向坐标合并
+        coords = np.vstack((points_x, points_y, points_z)).T
+        return coords
+
+
+    def _to_feature(self, coords) :
+        '''
+        计算 坐标数组 的 特征值
+        :param coords: (x,y,z) 坐标数组（归一化）
+        :return: 特征值
+        '''
+        feature = []
+        size = len(coords)
+        group_num = size / 3                        # 每 3 个坐标一组，分别组成方阵
+        groups = np.array_split(coords, group_num)
+        for group in groups :                       # 迭代每组方阵
+            eigen, vector = np.linalg.eig(group)    # 计算 特征值(1x3矩阵) 和 特征向量(3x3矩阵)
+            feature.extend(eigen)                   # 串接 特征值
+        return feature
+
+
+    def _save_feature(self, feature, cache_data) :
+        '''
+        保存人脸数据
+        :param feature: 人脸特征值
+        :param cache_data: 人脸缓存数据
+        :return: None
+        '''
+        self.sdbc.conn()
+        cache_data.feature = feature_to_str(feature)
+        self.dao.insert(self.sdbc, cache_data)
+        self.sdbc.close()
