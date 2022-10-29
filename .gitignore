@@ -3,3 +3,7 @@
 *.pyc
 
 data/tmp/*
+data/input/*
+data/output/*
+data/feature/*
+data/upload/*
