@@ -13,12 +13,12 @@ from src.bean.t_face_feature import TFaceFeature
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.upload_utils import *
 from src.utils.image_utils import *
-from src.utils.math_utils import c_feature, feature_to_str
+from src.utils.math_utils import *
 from src.config import SETTINGS
 import numpy as np
 
 
-class RecordFace :
+class FaceDetection :
 
     def __init__(self, 
         model_selection=0, static_image_mode=False, 
@@ -56,7 +56,7 @@ class RecordFace :
         '''
         录入人脸图片，计算特征值
         :param camera: 录入模式:  True:摄像头; False:上传图片
-        :return: 是否录入成功
+        :return: 录入成功的人脸数
         '''
         log.info("请%s人脸图像，用于生成特征值 ..." % ("录制" if camera else "上传"))
         if camera == True :
@@ -64,6 +64,7 @@ class RecordFace :
         else :
             imgpaths = open_select_window(title='请选择个人特征照片')
         
+        cnt = 0
         for imgpath in imgpaths :
             frame_image, cache_data = self._detecte_face(imgpath)
             if frame_image is None :
@@ -74,7 +75,11 @@ class RecordFace :
             if not feature :
                 log.error("计算人脸特征值失败: [%s]" % imgpath)
                 continue
-
+            else :
+                cnt += 1
+        log.info("成功录入 [%d/%d] 张人脸数据" % (cnt, len(imgpaths)))
+        return cnt
+        
 
     def _detecte_face(self, imgpath) :
         '''
@@ -120,9 +125,10 @@ class RecordFace :
         frame_image = None
         results = self.face_detection.process(image)
         if not results.detections:
+            log.warn("检测人脸位置失败")
             return frame_image
 
-        detection = results.detections[0]               # 此场景下只取 1 个人脸
+        detection = results.detections[0]               # 此场景下只取 1 张人脸
         location_data = detection.location_data
         if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
             box = location_data.relative_bounding_box   # 得到检测到人脸位置的方框标记（坐标是归一化的）
@@ -182,12 +188,13 @@ class RecordFace :
             # 使用 face_mesh 计算人脸 468 个点的三维地标（坐标是归一化的）
             results = self.face_mesh.process(image)
             if not results.multi_face_landmarks:
+                log.warn("拟合人脸网格失败")
                 return feature
 
             coords = self._to_coords(results.multi_face_landmarks[0].landmark)
             feature = self._to_feature(coords)
             self._save_feature(feature, cache_data)
-            log.info("已保存特征值: %s" % feature)
+            # log.info("已保存特征值: %s" % feature)
 
         else :
             coords = self._to_coords(landmark)

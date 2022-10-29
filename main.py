@@ -5,6 +5,7 @@
 import argparse
 from pypdm.dbc._sqlite import SqliteDBC
 from src.config import SETTINGS
+from src.core.face_detection import FaceDetection
 from src.core import adb
 
 
@@ -49,10 +50,8 @@ def record(args) :
     '''
     录入模式
     '''
-    from src.core.record_feature import RecordFace
-    rf = RecordFace()
-    rf.input_face(args.camera)
-
+    fd = FaceDetection()
+    fd.input_face(args.camera)
     return
 
 

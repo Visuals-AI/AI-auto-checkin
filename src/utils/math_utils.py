@@ -13,7 +13,7 @@ def feature_to_str(feature) :
 
 def str_to_feature(s_feature) :
     s_floats = s_feature.split(SPLIT)
-    return [complex(v) for v in s_floats]
+    return list(complex(v) for v in s_floats)
 
 
 def c_feature(results) :
