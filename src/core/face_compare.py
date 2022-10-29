@@ -4,8 +4,10 @@
 
 import cv2
 import shutil
+import numpy as np
 from color_log.clog import log
 from src.core._face_mediapipe import FaceMediapipe
+from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.utils.upload_utils import *
 from src.config import SETTINGS
 
@@ -46,12 +48,16 @@ class FaceCompare(FaceMediapipe) :
         if frame_image is None :
             log.warn("未能识别到人脸: [%s]" % imgpath)
             return
+        log.info("检测方框人像")
         
         feature = self.calculate_feature(frame_image)
         if not feature :
             log.warn("计算人脸特征值失败: [%s]" % imgpath)
             return
+        log.info("计算人像特征")
 
+
+        self._compare(feature)
         return
     
 
@@ -78,13 +84,14 @@ class FaceCompare(FaceMediapipe) :
         frame_image = self._to_box_face(image)
 
         # 保存方框人像数据
-        if frame_image is None :
-            feature_path = "%s/%s%s" % (SETTINGS.tmp_dir, image_id, SETTINGS.feature_fmt)
-            cv2.imwrite(feature_path, frame_image)
-            log.info("检测到人脸位置，已生成特征图片: %s" % feature_path)
+        # if frame_image is None :
+        #     feature_path = "%s/%s%s" % (SETTINGS.tmp_dir, image_id, SETTINGS.feature_fmt)
+        #     cv2.imwrite(feature_path, frame_image)
+        #     log.info("检测到人脸位置，已生成特征图片: %s" % feature_path)
+        #     return
 
         os.remove(original_path)
-        os.remove(feature_path)
+        # os.remove(feature_path)
         return frame_image
 
 
@@ -92,4 +99,18 @@ class FaceCompare(FaceMediapipe) :
         '''
         和特征库数据比对
         '''
-        
+        for id, f in FACE_FEATURE_CACHE.id_features.items() :
+            self._euclidean_distance(feature, f)
+
+
+
+    def _euclidean_distance(self, feature_1, feature_2) :
+        # print(feature_1)
+        print("=====================")
+        # print(feature_2)
+        A = np.array(feature_1)
+        B = np.array(feature_2)
+        dist = np.linalg.norm(A - B)
+        print(dist)
+        sim = 1.0 / (1.0 + dist) #归一化
+        print(sim)

@@ -17,12 +17,12 @@ FILETYPE = [
 
 # 请求选择一个文件
 def open_select_one_window(title="Please select one file:") :
-    filepaths = filedialog.askopenfilenames(
+    filepath = filedialog.askopenfilename(
         initialdir = os.getcwd(),
         title = title,
         filetypes = FILETYPE
     )
-    return filepaths
+    return filepath
 
 
 # 请求选择一个或多个文件

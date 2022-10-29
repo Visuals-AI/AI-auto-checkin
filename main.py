@@ -6,6 +6,7 @@ import argparse
 from pypdm.dbc._sqlite import SqliteDBC
 from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_detection import FaceDetection
+from src.core.face_compare import FaceCompare
 from src.core import adb
 from src.config import SETTINGS
 
@@ -61,7 +62,9 @@ def recognise(args) :
     匹配模式
     '''
     FACE_FEATURE_CACHE.load_all()
-    print(FACE_FEATURE_CACHE.id_features)
+    fc = FaceCompare()
+    fc.input_face(args.camera)
+
     # adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
     # adb.exec(SETTINGS.open_app)
     # adb.exec(SETTINGS.check_in)
