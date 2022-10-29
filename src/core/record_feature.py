@@ -69,7 +69,11 @@ class RecordFace :
             if frame_image is None :
                 log.error("未能识别到人脸: [%s]" % imgpath)
                 continue
-            self.calculate_feature(frame_image, cache_data)
+            
+            feature = self.calculate_feature(cache_data, frame_image)
+            if not feature :
+                log.error("计算人脸特征值失败: [%s]" % imgpath)
+                continue
 
 
     def _detecte_face(self, imgpath) :
@@ -162,23 +166,32 @@ class RecordFace :
         return bean
 
 
-    def calculate_feature(self, image, cache_data) :
+    def calculate_feature(self, cache_data=None, image=None, landmark=None) :
         '''
         计算人脸特征值
-        :param image: 统一尺寸的人脸图片对象
-        :param cache_data: 人脸缓存数据
+        :param cache_data: 人脸缓存数据（内部调用时参数）
+        :param image: 统一尺寸的人脸图片对象（内部调用时参数）
+        :param landmark: 人脸特征点的地标集（外部调用时参数）
         :return: 特征值
         '''
         feature = []
         log.info("开始计算人脸特征值 ...")
-        results = self.face_mesh.process(image)         # 使用 face_mesh 计算人脸 468 个点的三维坐标（坐标是归一化的）
-        if not results.multi_face_landmarks:
-            return feature
 
-        coords = self._to_coords(results.multi_face_landmarks[0].landmark)
-        feature = self._to_feature(coords)
-        self._save_feature(feature, cache_data)
-        log.info("已保存特征值: %s" % feature)
+        if landmark is None :
+
+            # 使用 face_mesh 计算人脸 468 个点的三维地标（坐标是归一化的）
+            results = self.face_mesh.process(image)
+            if not results.multi_face_landmarks:
+                return feature
+
+            coords = self._to_coords(results.multi_face_landmarks[0].landmark)
+            feature = self._to_feature(coords)
+            self._save_feature(feature, cache_data)
+            log.info("已保存特征值: %s" % feature)
+
+        else :
+            coords = self._to_coords(landmark)
+            feature = self._to_feature(coords)
         return feature
 
 
