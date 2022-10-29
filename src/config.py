@@ -25,6 +25,7 @@ class Config :
 
                 self.app = context.get('app')
                 self.debug = True if context.get('debug') == 'true' else False
+                self.tmp_dir = self.app.get('tmp_dir')
                 self.upload_dir = self.app.get('upload_dir')
                 self.feature_dir = self.app.get('feature_dir')
                 self.on_work = int(self.app.get('on_work') or 0)

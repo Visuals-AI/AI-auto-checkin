@@ -1,5 +1,6 @@
 app:
-  debug: 'true'                # 调试模式
+  debug: 'true'                 # 调试模式
+  tmp_dir: './data/tmp'         # 临时目录
   upload_dir: './data/upload'   # 存储拍摄/上传原始图片的目录
   feature_dir: './data/feature' # 初步加工原始图片、得到统一规格的图片存储目录
   on_work: 9                    # 上班打卡开始时间（小时）

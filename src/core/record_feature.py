@@ -9,8 +9,9 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import shutil
+import uuid
 from src.utils.upload_utils import *
-from src.utils.cv_utils import *
+from src.utils.image_utils import *
 from src.utils.math_utils import c_feature
 from src.config import SETTINGS
 
@@ -59,12 +60,18 @@ class RecordFace :
             imgpaths = open_select_window(title='请选择个人特征照片')
         
         for srcpath in imgpaths :
-            # 复制图片并重命名到临时目录，避免中文问题
-            root_dir, filename = os.path.split(srcpath)
-            snkpath = './data/tmp/' + filename
+            filename = os.path.splitext(srcpath)[0]
+            filesuffix = os.path.splitext(srcpath)[-1]
+            snkpath = "%s/%s%s" % (SETTINGS.tmp_dir, uuid.uuid1().hex, filesuffix)
             shutil.copyfile(srcpath, snkpath)
             self._save_features(snkpath)
-            os.remove(snkpath)
+            # os.remove(snkpath)
+
+
+    def _fix_image_path(self, imgpath) :
+        root_dir, filename = os.path.split(imgpath)
+
+        return SETTINGS.tmp_dir + filename
 
 
     def _save_features(self, imgpath) :
@@ -78,8 +85,8 @@ class RecordFace :
         # 重新识别图像，计算特征值 -> 图片名 关系
         image = cv2.imread(imgpath)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 图片转换到 RGB 空间
-        resize_image = self._frame_face(image)
-        # self.calculate_features(resize_image)
+        frame_image = self._frame_face(image)
+        # self.calculate_features(frame_image)
 
 
     def _frame_face(self, image) :
@@ -114,7 +121,7 @@ class RecordFace :
 
         # annotated_image = image.copy()
         # self.mp_drawing.draw_detection(annotated_image, detection)
-        
+
         return frame_image
 
 

@@ -2,6 +2,8 @@
 
 > 自动签到机
 
+删除 data/input 的历史记录
+
 ------
 
 https://blog.csdn.net/u012505617/article/details/89191158
