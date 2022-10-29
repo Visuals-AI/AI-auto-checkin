@@ -6,7 +6,7 @@
 # 绘制方框 ：https://blog.csdn.net/dgvv4/article/details/122054388
 
 import cv2
-import mediapip_demoe as mp
+import mediapipe as mp
 
 # 导入绘图模块
 mp_drawing = mp.solutions.drawing_utils

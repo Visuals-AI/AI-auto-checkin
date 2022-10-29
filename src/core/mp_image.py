@@ -5,10 +5,10 @@
 # https://www.toutiao.com/article/6913754944206258696/?app=news_article&timestamp=1666621808&use_new_style=1&req_id=202210242230080102121621361C58653B&group_id=6913754944206258696&wxshare_count=1&tt_from=weixin&utm_source=weixin&utm_medium=toutiao_android&utm_campaign=client_share&share_token=2903d457-7d99-47f1-bce3-1787abde8660&source=m_redirect&wid=1666629121540
 
 import cv2
-from save_image import get_feature
-import mediapipe as mp
+from core.record_feature import get_feature
+import mediapip_demoe as mp
 import numpy as np
-from src.utils.math import c_feature
+from src.utils.math_utils import c_feature
 
 
 def main() :

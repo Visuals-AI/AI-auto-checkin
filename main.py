@@ -21,7 +21,6 @@ def args() :
     )
     parser.add_argument('-r', '--record', dest='record', action='store_true', default=False, help='录入模式: 用于录入人脸特征点; 默认为识别模式')
     parser.add_argument('-c', '--camera', dest='camera', action='store_true', default=False, help='仅[录入模式]有效: 摄像头录入方式; 默认为图片录入方式')
-    # parser.add_argument('-i', '--imagepath', dest='imagepath', type=str, default='./data/features', help='仅[录入模式]有效: 特征图片的存储位置')
     parser.add_argument('-p', '--password', dest='password', type=str, default='123456', help='仅[识别模式]有效: 手机的锁屏密码')
     return parser.parse_args()
 
