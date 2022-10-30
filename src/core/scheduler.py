@@ -40,12 +40,15 @@ class Scheduler :
             hour = '%d-%d' % (SETTINGS.on_begin_at, SETTINGS.on_end_at)
         )
 
-        # log.info("已设置每天下班自动打卡时间: ")
-        # log.info("范围: [%s] - [%s]" % (SETTINGS.off_begin_at, SETTINGS.off_end_at))
-        # log.info("循环: [%s] 分钟/次" % SETTINGS.off_interval)
-        # schedule.every(SETTINGS.off_interval).minutes.\
-        #             at(SETTINGS.off_begin_at).until(SETTINGS.off_end_at).\
-        #             do(self._task)
+        log.info("范围: [%02d:00] - [%02d:00]" % (SETTINGS.off_begin_at, SETTINGS.off_end_at))
+        log.info("循环: [%s] 分钟/次" % SETTINGS.off_interval)
+        self.scheduler.add_job(
+            self._task,
+            trigger = self.trigger,
+            second = '0',
+            minute = '*/%d' % SETTINGS.off_interval,
+            hour = '%d-%d' % (SETTINGS.off_begin_at, SETTINGS.off_end_at)
+        )
 
 
     def _task(self) :
