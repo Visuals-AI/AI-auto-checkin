@@ -118,10 +118,11 @@ class FaceMediapipe :
 
         capture = self._init_camera()
         is_open = capture.isOpened()
-        log.info('加载摄像头的数据流%s' % 
-            ('成功（按 <%s> 退出，按 <%s> 确认）' % (EXIT_KEY, SAVE_KEY) 
-            if is_open else '失败（请确认没有其他程序在读取该数据流）')
-        )
+        if is_open :
+            log.info('加载摄像头的数据流成功（按 <%s> 退出，按 <%s> 确认）' % (EXIT_KEY, SAVE_KEY))
+        else :
+            imgpath = None
+            log.info('加载摄像头的数据流失败（请确认没有其他程序在读取该数据流）')
         while is_open:
             is_open, input_frame_data = capture.read()
             if not is_open:
@@ -160,7 +161,7 @@ class FaceMediapipe :
 
     def _init_camera(self) :
         log.info('正在打开视频设备（索引号=%d） ...' % SETTINGS.dev_idx)
-        capture = cv2.VideoCapture(SETTINGS.dev_idx, cv2.CAP_DSHOW)    # 初始化设备时间较长
+        capture = cv2.VideoCapture(SETTINGS.dev_idx)    # 初始化设备时间较长
         capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*SETTINGS.fourcc))
         capture.set(cv2.CAP_PROP_FPS, SETTINGS.fps)
         capture.set(cv2.CAP_PROP_FRAME_WIDTH, SETTINGS.frame_width)

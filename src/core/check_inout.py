@@ -20,20 +20,10 @@ class CheckInOut :
     
     def query_today(self) :
         today = datetime.date.today()
-        wheres = { TCheckin.s_date: today }
+        wheres = { ('%s =' % TCheckin.s_date): today }
 
         self.sdbc.conn()
         bean = self.dao.query_one(self.sdbc, wheres)
-        self.sdbc.close()
-        return bean
-
-
-    def update_today(self) :
-        today = datetime.date.today()
-        hour = time.localtime().tm_hour
-        minute = time.localtime().tm_min
-
-        bean = self.query_today()
         if bean is None :
             bean = TCheckin()
             bean.date = today
@@ -42,18 +32,29 @@ class CheckInOut :
             bean.checkout_hour = -1
             bean.checkout_minute = -1
             bean.work_time = -1
+            self.dao.insert(self.sdbc, bean)
+        self.sdbc.close()
+        return bean
 
+
+    def update_today(self) :
         is_ok = False
+        today = datetime.date.today()
+        hour = time.localtime().tm_hour
+        minute = time.localtime().tm_min
+
+        bean = self.query_today()
+        bean.date = today    # 查出来的数据会变成 byte，这里不转换直接重新赋值
+
         self.sdbc.conn()
-        if not bean.checkin_hour :
+        if bean.checkin_hour < 0 :
             bean.checkin_hour = hour
             bean.checkin_minute = minute
-            is_ok = self.dao.insert(self.sdbc, bean)
+            is_ok = self.dao.update(self.sdbc, bean)
             log.info("更新 [%s] 上班打卡时间 [%02d:%02d] %s" % (
                 today, bean.checkin_hour, bean.checkin_minute, 
                 ("成功" if is_ok else "失败"))
             )
-
         else :
             bean.checkout_hour = hour
             bean.checkout_minute = minute
@@ -65,7 +66,6 @@ class CheckInOut :
                 today, bean.checkout_hour, bean.checkout_minute, 
                 ("成功" if is_ok else "失败"))
             )
-
         self.sdbc.close()
         return is_ok
 

@@ -22,7 +22,7 @@ class Scheduler :
         self.trigger = 'cron'
         self._set_task()
 
-        self.fc = FaceCompare()
+        self.fc = FaceCompare(args)
         self.cio = CheckInOut()
 
 
@@ -35,7 +35,7 @@ class Scheduler :
 
     def _set_task(self) :
         log.info("已设置【ADB 保活】定时任务: ")
-        log.info("循环: [%s] 秒/次" % SETTINGS.keep_live)
+        log.debug("循环: [%s] 秒/次" % SETTINGS.keep_live)
         self.scheduler.add_job(
             ADB_CLIENT.keep_live,
             trigger = self.trigger,
@@ -43,8 +43,8 @@ class Scheduler :
         )
 
         log.info("已设置【每天上班】自动打卡时间: ")
-        log.info("范围: [%02d:00] - [%02d:00]" % (SETTINGS.on_begin_at, SETTINGS.on_end_at))
-        log.info("循环: [%s] 分钟/次" % SETTINGS.on_interval)
+        log.debug("范围: [%02d:00] - [%02d:00]" % (SETTINGS.on_begin_at, SETTINGS.on_end_at))
+        log.debug("循环: [%s] 分钟/次" % SETTINGS.on_interval)
         self.scheduler.add_job(
             self._task,
             trigger = self.trigger,
@@ -54,8 +54,8 @@ class Scheduler :
         )
 
         log.info("已设置【每天下班】自动打卡时间: ")
-        log.info("范围: [%02d:00] - [%02d:00]" % (SETTINGS.off_begin_at, SETTINGS.off_end_at))
-        log.info("循环: [%s] 分钟/次" % SETTINGS.off_interval)
+        log.debug("范围: [%02d:00] - [%02d:00]" % (SETTINGS.off_begin_at, SETTINGS.off_end_at))
+        log.debug("循环: [%s] 分钟/次" % SETTINGS.off_interval)
         self.scheduler.add_job(
             self._task,
             trigger = self.trigger,
@@ -71,9 +71,10 @@ class Scheduler :
             return
 
         # 拍摄人脸
-        image_id = self.fc.input_face(self.args.camera)
+        image_id = self.fc.input_face()
         if not image_id :
-            return  # 匹配失败
+            log.warn("[取消打卡] 不是本人")
+            return
 
         # 执行预设 adb 指令
         adb(self.args)
