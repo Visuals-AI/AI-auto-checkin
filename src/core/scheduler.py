@@ -7,7 +7,7 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_compare import FaceCompare
-from src.utils import adb
+from src.core.adb import adb
 from src.config import SETTINGS
 from color_log.clog import log
 
@@ -63,9 +63,8 @@ class Scheduler :
         if not image_id :
             return  # 匹配失败
 
-        adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
-        adb.exec(SETTINGS.open_app)
-        adb.exec(SETTINGS.check_in)
+        # 执行预设 adb 指令
+        adb(self.args)
 
     
     def _check_task_conditions(self) :

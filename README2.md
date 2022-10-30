@@ -6,6 +6,7 @@ adb 指令： https://www.cnblogs.com/botoo/p/9655798.html?share_token=bc2d44e1-
 *#*#2846579#*#*
 
 
+
 ```shell
 # 进入 shell (可以不进入)
 adb shell

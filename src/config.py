@@ -53,7 +53,7 @@ class Config :
                 self.face_height = resize_face.get('height')
                 self.match_min_sim = max(0.5, float(self.mediapipe.get('match_min_sim')))
 
-                device = context.get('video_capture_card')
+                device = context.get('camera')
                 self.dev_idx = int(device.get('index') or 0)
                 self.fourcc = list(device.get('fourcc') or 'MJPG')
                 self.fps = device.get('fps')
@@ -62,11 +62,14 @@ class Config :
                 self.frame_height = frame_size.get('height')
 
                 self.adb = context.get('adb')
-                self.cmd_interval = self.adb.get('cmd_interval')
-                self.unlock_screen = self.adb.get('unlock_screen')
-                self.open_app = self.adb.get('open_app')
-                self.check_in = self.adb.get('check_in')
-                
+                self.keep_live = self.adb.get('keep_live')
+                self.app_name = self.adb.get('app')
+                self.adb_app = context.get(self.app_name)
+                self.unlock_screen = self.adb_app.get('unlock_screen')
+                self.open_app = self.adb_app.get('open_app')
+                self.check_in = self.adb_app.get('check_in')
+                self.lock_screen = self.adb_app.get('lock_screen')
+
 
 SETTINGS = Config(SETTINGS_PATH, CHARSET)
 

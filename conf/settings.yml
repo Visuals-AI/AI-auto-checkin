@@ -46,7 +46,7 @@ adb:
   keep_live:                            # adb 连接保活命令
     - "pwd"
     - "wait 30"
-  checkin: DingDing                     # 指定当前的 adb 连接配置
+  app: DingDing                         # 指定当前的 app 的签到步骤（adb 命令集）
 
 DingDing:
   unlock_screen:                        # 解锁屏幕步骤
