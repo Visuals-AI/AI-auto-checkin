@@ -69,5 +69,5 @@ class ADB :
     def _syscall(self, cmd) :
         log.debug('执行命令: %s' % cmd)
         rst = os.popen(cmd).read().strip() or ''
-        log.debug('执行结果: %s' % rst)
+        # log.debug('执行结果: %s' % rst)
         return rst
