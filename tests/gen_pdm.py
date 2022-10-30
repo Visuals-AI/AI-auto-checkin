@@ -16,7 +16,7 @@ from pypdm.dbc._sqlite import SqliteDBC
 from src.config import SETTINGS
 
 
-def init() :
+def main() :
     sdbc = SqliteDBC(options=SETTINGS.database)
     sdbc.exec_script(SETTINGS.sqlpath)
     generate_pdm(sdbc)
@@ -33,4 +33,4 @@ def generate_pdm(sdbc) :
 
 
 if '__main__' == __name__ :
-    init()
+    main()
