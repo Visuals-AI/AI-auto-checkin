@@ -62,16 +62,18 @@ DingDing:
     - "input tap 411 1387"              # 步骤 1: 点击 APP 分组坐标
     - "wait 2"
     - "input tap 536 980"               # 步骤 2: 点击【钉钉】应用坐标
-    - "wait 2"
+    - "wait 8"
   check_in:                             # 签到步骤
     - "input tap 537 2042"              # 步骤 1: 点击【工作台】按钮坐标
-    - "wait 5"
+    - "wait 8"
     - "input tap 251 453"               # 步骤 2: 点击【全员】按钮坐标
-    - "wait 5"
+    - "wait 8"
     - "input tap 248 1063"              # 步骤 3: 点击【考勤打卡】按钮坐标
-    - "wait 5"
+    - "wait 8"
     - "input tap 540 1111"              # 步骤 4: 点击【上班/下班打卡】按钮坐标
-    - "wait 10"
+    - "wait 8"
+    - "input tap 982 164"               # 步骤 5: 点击【关闭】按钮坐标
+    - "wait 5"
   lock_screen:                          # 锁屏
     - "input keyevent 223"
 
