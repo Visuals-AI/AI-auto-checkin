@@ -118,10 +118,11 @@ class FaceMediapipe :
 
         capture = self._init_camera()
         is_open = capture.isOpened()
-        log.info('加载摄像头的数据流%s' % 
-            ('成功（按 <%s> 退出，按 <%s> 确认）' % (EXIT_KEY, SAVE_KEY) 
-            if is_open else '失败（请确认没有其他程序在读取该数据流）')
-        )
+        if is_open :
+            log.info('加载摄像头的数据流成功（按 <%s> 退出，按 <%s> 确认）' % (EXIT_KEY, SAVE_KEY))
+        else :
+            imgpath = None
+            log.info('加载摄像头的数据流失败（请确认没有其他程序在读取该数据流）')
         while is_open:
             is_open, input_frame_data = capture.read()
             if not is_open:
