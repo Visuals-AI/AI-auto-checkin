@@ -4,9 +4,17 @@ app:
   upload_dir: './data/upload'   # 存储拍摄/上传原始图片的目录
   feature_dir: './data/feature' # 初步加工原始图片、得到统一规格的图片存储目录
   feature_fmt: '.png'           # 特征图片格式
-  on_work: 9                    # 上班打卡开始时间（小时）
-  off_work: 18                  # 下班打卡开始时间（小时）
-  checkin_interval: 30          # 打卡间隔（分钟）
+
+scheduler:                      # 定时任务
+  work_time: 8                  # 工作时长
+  on_work:                      # 上班卡
+    begin_at: '09:00'           # 开始时间
+    end_at: '11:00'             # 结束时间
+    interval: 10                # 重试间隔（分钟）
+  off_work:                     # 下班卡
+    begin_at: '18:00'           # 开始时间
+    end_at: '23:00'             # 结束时间
+    interval: 10                # 重试间隔（分钟）
 
 database:
   dbtype: 'sqlite'

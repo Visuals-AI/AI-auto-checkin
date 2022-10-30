@@ -6,6 +6,7 @@ from pypdm.dbc._sqlite import SqliteDBC
 from pypdm.assist.num import byte_to_str
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.config import SETTINGS, FEATURE_SPLIT
+from color_log.clog import log
 
 
 class FaceCache :
@@ -18,12 +19,14 @@ class FaceCache :
 
 
     def load_all(self) :
+        log.info("正在加载库存的人脸特征到内存 ...")
         self.sdbc.conn()
         beans = self.dao.query_all(self.sdbc)
         self.sdbc.close()
 
         for bean in beans :
             self.add(bean)
+        log.info("缓存人脸特征完成，共 [%d] 个" % len(beans))
 
 
     def add(self, bean) :

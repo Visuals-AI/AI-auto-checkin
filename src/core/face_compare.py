@@ -8,7 +8,7 @@ import numpy as np
 from color_log.clog import log
 from src.core._face_mediapipe import FaceMediapipe
 from src.cache.face_cache import FACE_FEATURE_CACHE
-from src.utils.upload_utils import *
+from src.utils.upload import *
 from src.config import SETTINGS
 
 

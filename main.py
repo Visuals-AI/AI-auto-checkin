@@ -4,11 +4,11 @@
 
 import argparse
 from pypdm.dbc._sqlite import SqliteDBC
+from src.core.scheduler import Scheduler
 from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_detection import FaceDetection
-from src.core.face_compare import FaceCompare
-from src.core import adb
 from src.config import SETTINGS
+from color_log.clog import log
 
 
 def args() :
@@ -35,41 +35,25 @@ def main(args) :
     else :
         recognise(args)
 
-    # 思路：
-    #   1. 定时器：到达打卡时间范围（上班/下班各一）
-    #   2. 判断今天是否已打卡，若否继续
-    #   3. 打开电脑摄像头，通过 AI 人脸识别判断当前屏幕前的是否为本人，若是继续
-    #   4. 通过 ADB 指令解锁手机，并进入 APP 打卡
-    #   5. 打卡成功，标记今天已打卡，手机锁屏
-    #
-    #   备注
-    #       1. 上班卡: 9:00 开始，只要未打则半小时打一次
-    #       2. 下班卡: 18:00 开始，在 ADB 连通的情况下，每隔半小时打一次，直到 24:00
-    #       3. 上传人脸图片时，先做初始动作： 框取脸部位置，调整缩放图片的尺寸一致
-    
 
 def record(args) :
     '''
     录入模式
     '''
+    log.info("程序启动模式: [人脸录入模式]")
     fd = FaceDetection()
     fd.input_face(args.camera)
-    return
 
 
 def recognise(args) :
     '''
     匹配模式
     '''
+    log.info("程序启动模式: [人脸匹配模式]")
     FACE_FEATURE_CACHE.load_all()
-    fc = FaceCompare()
-    fc.input_face(args.camera)
-
-    # adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
-    # adb.exec(SETTINGS.open_app)
-    # adb.exec(SETTINGS.check_in)
-
-
+    scheduler = Scheduler(args)
+    scheduler.start()
+    
 
 def init() :
     sdbc = SqliteDBC(options=SETTINGS.database)

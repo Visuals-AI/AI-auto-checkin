@@ -5,3 +5,4 @@ pypdm-db>=1.1.3
 opencv-python==4.6.0.66
 opencv-contrib-python==4.6.0.66
 mediapipe==0.8.11
+schedule=1.1.0
