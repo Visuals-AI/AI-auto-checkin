@@ -160,7 +160,7 @@ class FaceMediapipe :
 
     def _init_camera(self) :
         log.info('正在打开视频设备（索引号=%d） ...' % SETTINGS.dev_idx)
-        capture = cv2.VideoCapture(SETTINGS.dev_idx, cv2.CAP_DSHOW)    # 初始化设备时间较长
+        capture = cv2.VideoCapture(SETTINGS.dev_idx)    # 初始化设备时间较长
         capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*SETTINGS.fourcc))
         capture.set(cv2.CAP_PROP_FPS, SETTINGS.fps)
         capture.set(cv2.CAP_PROP_FRAME_WIDTH, SETTINGS.frame_width)
