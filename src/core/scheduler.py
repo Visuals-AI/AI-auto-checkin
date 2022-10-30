@@ -29,7 +29,7 @@ class Scheduler :
 
 
     def _set_task(self) :
-        log.info("已设置每天上班自动打卡时间: ")
+        log.info("已设置【每天上班】自动打卡时间: ")
         log.info("范围: [%02d:00] - [%02d:00]" % (SETTINGS.on_begin_at, SETTINGS.on_end_at))
         log.info("循环: [%s] 分钟/次" % SETTINGS.on_interval)
         self.scheduler.add_job(
@@ -40,6 +40,7 @@ class Scheduler :
             hour = '%d-%d' % (SETTINGS.on_begin_at, SETTINGS.on_end_at)
         )
 
+        log.info("已设置【每天下班】自动打卡时间: ")
         log.info("范围: [%02d:00] - [%02d:00]" % (SETTINGS.off_begin_at, SETTINGS.off_end_at))
         log.info("循环: [%s] 分钟/次" % SETTINGS.off_interval)
         self.scheduler.add_job(
