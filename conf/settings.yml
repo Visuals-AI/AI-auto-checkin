@@ -15,7 +15,7 @@ scheduler:                      # 定时任务
   checkout:                     # 下班卡
     begin_at: 18                # 开始时间
     end_at: 23                  # 结束时间
-    interval: 10                # 重试间隔（分钟）
+    interval: 5                 # 重试间隔（分钟）
 
 
 database:
@@ -26,12 +26,12 @@ database:
 
 mediapipe:
   show_image: 'false'           # CV 绘制图像画面的总开关（包括识别前的原画面，和识别后的关键坐标画面），关闭后相当于在后台运行，可以适当提高一些帧率
-  show_video: 'true'            # CV 绘制视频画面的总开关（包括识别前的原画面，和识别后的关键坐标画面），关闭后相当于在后台运行，可以适当提高一些帧率
+  show_video: 'false'           # CV 绘制视频画面的总开关（包括识别前的原画面，和识别后的关键坐标画面），关闭后相当于在后台运行，可以适当提高一些帧率
   frequency: 2                  # 识别图像时的频率，每隔 N 帧识别一次（0 表示每帧都识别，值越大画面延迟越小，一般 2 为正常速率）
   resize_face:                  # 录入人脸时，框取人脸部分并调整保存的尺寸
     width: 512
     height: 512
-  match_min_sim: 0.75           # 匹配人脸的最小相似度
+  match_min_sim: 0.70           # 匹配人脸的最小相似度
 
 
 camera:                         # 摄像头
@@ -44,7 +44,7 @@ camera:                         # 摄像头
 
 
 adb:
-  app: DingDing                         # 指定当前的 app 的签到步骤（adb 命令集）
+  app: GT                         # 指定当前的 app 的签到步骤（adb 命令集）
   keep_live: 30                         # adb 连接保活时间（秒数）
 
 DingDing:
@@ -61,14 +61,14 @@ DingDing:
     - "input tap 411 1387"              # 步骤 1: 点击 APP 分组坐标
     - "wait 2"
     - "input tap 536 980"               # 步骤 2: 点击【钉钉】应用坐标
-    - "wait 8"
+    - "wait 7"
   check_in:                             # 签到步骤
     - "input tap 537 2042"              # 步骤 1: 点击【工作台】按钮坐标
-    - "wait 8"
+    - "wait 3"
     - "input tap 251 453"               # 步骤 2: 点击【全员】按钮坐标
-    - "wait 8"
+    - "wait 3"
     - "input tap 248 1063"              # 步骤 3: 点击【考勤打卡】按钮坐标
-    - "wait 8"
+    - "wait 7"
     - "input tap 540 1111"              # 步骤 4: 点击【上班/下班打卡】按钮坐标
     - "wait 8"
     - "input tap 982 164"               # 步骤 5: 点击【关闭】按钮坐标
@@ -88,13 +88,13 @@ GT:
     - "wait 2"
   open_app:                             # 打开用于签到的 APP 步骤
     - "input tap 411 1387"              # 步骤 1: 点击 APP 分组坐标
-    - "wait 2"
+    - "wait 3"
     - "input tap 800 706"               # 步骤 2: 点击【GT】应用坐标
-    - "wait 2"
+    - "wait 7"
   check_in:                             # 签到步骤
     - "input tap 543 2051"              # 步骤 1: 点击【应用】按钮坐标
-    - "wait 2"
+    - "wait 3"
     - "input tap 896 849"               # 步骤 2: 点击【去打卡】按钮坐标
-    - "wait 10"
+    - "wait 5"
   lock_screen:                          # 锁屏
     - "input keyevent 223"

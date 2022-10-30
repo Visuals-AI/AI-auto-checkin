@@ -44,6 +44,8 @@ class CheckInOut :
         minute = time.localtime().tm_min
 
         bean = self.query_today()
+        bean.date = today    # 查出来的数据会变成 byte，这里不转换直接重新赋值
+
         self.sdbc.conn()
         if bean.checkin_hour < 0 :
             bean.checkin_hour = hour
