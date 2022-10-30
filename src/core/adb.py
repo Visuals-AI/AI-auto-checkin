@@ -52,7 +52,7 @@ class ADB :
         second = 0
         mth = re.match(self.WAIT_RGX, cmd)
         if mth :
-            second = mth.groups(1)[0]
+            second = int(mth.groups(1)[0])
         return second
 
 
