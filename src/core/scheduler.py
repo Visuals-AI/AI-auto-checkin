@@ -57,12 +57,15 @@ class Scheduler :
             log.warn("未满足执行条件，本轮定时任务取消")
             return
 
+        # 拍摄人脸
         fc = FaceCompare()
-        fc.input_face(self.args.camera)
+        image_id = fc.input_face(self.args.camera)
+        if not image_id :
+            return  # 匹配失败
 
-        # adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
-        # adb.exec(SETTINGS.open_app)
-        # adb.exec(SETTINGS.check_in)
+        adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
+        adb.exec(SETTINGS.open_app)
+        adb.exec(SETTINGS.check_in)
 
     
     def _check_task_conditions(self) :
