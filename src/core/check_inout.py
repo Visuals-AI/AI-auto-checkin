@@ -20,7 +20,7 @@ class CheckInOut :
     
     def query_today(self) :
         today = datetime.date.today()
-        wheres = { TCheckin.s_date: today }
+        wheres = { ('%s =' % TCheckin.s_date): today }
 
         self.sdbc.conn()
         bean = self.dao.query_one(self.sdbc, wheres)

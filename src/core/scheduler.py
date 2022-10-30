@@ -73,7 +73,8 @@ class Scheduler :
         # 拍摄人脸
         image_id = self.fc.input_face(self.args.camera)
         if not image_id :
-            return  # 匹配失败
+            log.warn("[取消打卡] 不是本人")
+            return
 
         # 执行预设 adb 指令
         adb(self.args)
