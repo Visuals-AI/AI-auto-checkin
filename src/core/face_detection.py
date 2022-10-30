@@ -8,46 +8,49 @@ from color_log.clog import log
 from src.bean.t_face_feature import TFaceFeature
 from src.core._face_mediapipe import FaceMediapipe
 from src.cache.face_cache import FACE_FEATURE_CACHE
-from src.utils.upload import *
 from src.config import SETTINGS
 
 
 class FaceDetection(FaceMediapipe) :
 
-    def __init__(self, 
+    def __init__(self, args, 
         model_selection=0, static_image_mode=False, 
         min_detection_confidence=0.5, min_tracking_confidence=0.5
     ) -> None:
         '''
         构造函数
+        :param args: main 入参
         :param model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
         :param static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
         :param min_detection_confidence: 人脸检测模型的最小置信度值
         :param min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
-        FaceMediapipe.__init__(self, 
+        FaceMediapipe.__init__(self, args, 
             model_selection, static_image_mode, 
             min_detection_confidence, min_tracking_confidence
         )
 
     
-    def input_face(self, camera=False) :
+    def input_face(self) :
         '''
         录入人脸图像，计算特征值
-        :param camera: 录入模式:  True:摄像头; False:上传图片
         :return: 录入成功的人脸数
         '''
         cnt = 0
-        log.info("请%s人脸图像，用于生成特征值 ..." % ("录制" if camera else "上传"))
-        if camera == True :
-            imgpaths = open_camera()
+        log.info("请%s人脸图像，用于生成特征值 ..." % ("录制" if self.arg.camera else "上传"))
+        if self.arg.camera :
+            imgpaths = self._open_camera()
         else :
-            imgpaths = open_select_multi_window(title='请选择需要录入特征库的照片')
-        if not imgpath :
-            log.warn("%s的图像异常 : %s" % (("录制" if camera else "上传"), imgpath))
+            imgpaths = self._open_select_multi_window(title='请选择需要录入特征库的照片')
+        if not imgpaths :
+            log.warn("%s的图像异常 : %s" % (("录制" if self.arg.camera else "上传"), imgpath))
             return cnt
         
         for imgpath in imgpaths :
+            if not imgpath :
+                log.warn("图片异常: [%s]" % imgpath)
+                continue
+
             frame_image, cache_data = self._detecte_face(imgpath)
             if frame_image is None :
                 log.warn("未能识别到人脸，请重新录入: [%s]" % imgpath)
@@ -84,7 +87,7 @@ class FaceDetection(FaceMediapipe) :
         # 从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
         image = cv2.imread(original_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 图片转换到 RGB 空间
-        frame_image = self._to_box_face(image)
+        frame_image = self._to_alignment(image)
 
         # 保存方框人像数据
         if frame_image is not None :

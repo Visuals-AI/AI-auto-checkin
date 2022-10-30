@@ -17,6 +17,7 @@ SETTINGS_PATH = '%s/conf/settings.yml' % PRJ_DIR
 FEATURE_SPLIT = ", "    # 特征值格式转换分隔符
 
 
+
 class Config :
 
     def __init__(self, settings_path, charset) -> None:
@@ -46,11 +47,20 @@ class Config :
                 self.sqlpath = self.database.get('sqlpath')
 
                 self.mediapipe = context.get('mediapipe')
-                self.show_cv = self.mediapipe.get('show_cv')
+                self.show_image = self.mediapipe.get('show_image')
+                self.show_video = self.mediapipe.get('show_video')
+                resize_face = self.mediapipe.get('resize_face')
+                self.face_width = resize_face.get('width')
+                self.face_height = resize_face.get('height')
                 self.match_min_sim = max(0.5, float(self.mediapipe.get('match_min_sim')))
 
                 device = context.get('camera')
                 self.dev_idx = int(device.get('index') or 0)
+                self.fourcc = list(device.get('fourcc') or 'MJPG')
+                self.fps = device.get('fps')
+                frame_size = device.get('frame')
+                self.frame_width = frame_size.get('width')
+                self.frame_height = frame_size.get('height')
 
                 self.adb = context.get('adb')
                 self.keep_live = self.adb.get('keep_live')

@@ -7,25 +7,40 @@ import uuid
 import cv2
 import mediapipe as mp
 import numpy as np
+import tkinter
+from tkinter import filedialog
 from color_log.clog import log
 from pypdm.dbc._sqlite import SqliteDBC
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.config import SETTINGS, FEATURE_SPLIT
 
 
+EXIT_KEY = 'q'          # 退出 CV 绘制窗口的按键
+SAVE_KEY = 's'          # 保存 CV 绘制窗口的按键
+FILETYPE = [            # 设置文件对话框会显示的文件类型
+    ('all files', '.*'), 
+    ('image files', '.jpg'), 
+    ('image files', '.jpeg'), 
+    ('image files', '.png'), 
+    ('image files', '.bpm')
+]
+
+
 class FaceMediapipe :
 
-    def __init__(self, 
+    def __init__(self, args,
         model_selection=0, static_image_mode=False, 
         min_detection_confidence=0.5, min_tracking_confidence=0.5
     ) -> None:
         '''
         构造函数
+        :param args: main 入参
         :param model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
         :param static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
         :param min_detection_confidence: 人脸检测模型的最小置信度值
         :param min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
+        self.args = args
         self.MAX_NUM_FACES = 1                                      # 检测人脸个数，此场景下只取 1 个人脸
         self.mp_drawing = mp.solutions.drawing_utils                # 导入绘制辅助标记的工具（此为 mediapipe 的，不是 opencv 的）
         self.resize_face = (SETTINGS.face_width, SETTINGS.face_height)
@@ -47,6 +62,40 @@ class FaceMediapipe :
         )
 
 
+    def _open_select_one_window(self, title="Please select one file:") :
+        '''
+        打开系统选择文件窗口（选择一个文件）
+        :param title: 窗口标题
+        :return: 选择的文件路径
+        '''
+        tk = tkinter.Tk()
+        tk.withdraw()     # 隐藏 tk 窗体
+        filepath = filedialog.askopenfilename(
+            initialdir = os.getcwd(),
+            title = title,
+            filetypes = FILETYPE
+        )
+        tk.destroy()      # 销毁 tk 窗体
+        return filepath
+
+
+    def _open_select_multi_window(self, title="Please select one or more files:") :
+        '''
+        打开系统选择文件窗口（选择多个文件）
+        :param title: 窗口标题
+        :return: 选择的文件路径
+        '''
+        tk = tkinter.Tk()
+        tk.withdraw()     # 隐藏 tk 窗体
+        filepaths = filedialog.askopenfilenames(
+            initialdir = os.getcwd(),
+            title = title,
+            filetypes = FILETYPE
+        )
+        tk.destroy()      # 销毁 tk 窗体
+        return filepaths
+
+
     def _gen_image_params(self, imgpath) :
         filename = os.path.split(imgpath)[-1]
         name = os.path.splitext(filename)[0]
@@ -63,7 +112,69 @@ class FaceMediapipe :
         return uuid.uuid1().hex
 
     
-    def _to_box_face(self, image) :
+    def _open_camera(self) :
+        image_id = self._gen_image_id()
+        imgpath = "%s/%s%s" % (SETTINGS.upload_dir, image_id, SETTINGS.feature_fmt)
+
+        capture = self._init_camera()
+        is_open = capture.isOpened()
+        log.info('加载摄像头的数据流%s' % 
+            ('成功（按 <%s> 退出，按 <%s> 确认）' % (EXIT_KEY, SAVE_KEY) 
+            if is_open else '失败（请确认没有其他程序在读取该数据流）')
+        )
+        while is_open:
+            is_open, input_frame_data = capture.read()
+            if not is_open:
+                continue
+
+            mirror_frame_data = cv2.flip(input_frame_data, 1)   # 镜像翻转画面
+            frame_data = cv2.cvtColor(mirror_frame_data, cv2.COLOR_BGR2RGB)
+
+            results = self.face_detection.process(frame_data)
+            if not results.detections:
+                log.warn("检测人脸位置失败")
+                continue
+
+            detection = results.detections[0]   # 此场景下只取 1 张人脸
+            image = cv2.cvtColor(frame_data.copy(), cv2.COLOR_RGB2BGR)  # 恢复彩色通道
+
+            if self.args.record or SETTINGS.show_video :
+                annotated_image = image.copy()
+                self.mp_drawing.draw_detection(annotated_image, detection)        # 添加 mediapipe 的标注
+                cv2.imshow('Preview Frame Face; Exit <q>; Save <s>', annotated_image)
+
+                press = cv2.waitKey(1) & 0xFF
+                if press == ord(SAVE_KEY) :
+                    cv2.imwrite(imgpath, image)
+                    break
+                elif press == ord(EXIT_KEY) :
+                    imgpath = None
+                    break
+            else :
+                cv2.imwrite(imgpath, image)
+                break
+        
+        capture.release()   # 释放视频设备句柄
+        return [ imgpath ]
+
+
+    def _init_camera(self) :
+        log.info('正在打开视频设备（索引号=%d） ...' % SETTINGS.dev_idx)
+        capture = cv2.VideoCapture(SETTINGS.dev_idx, cv2.CAP_DSHOW)    # 初始化设备时间较长
+        capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*SETTINGS.fourcc))
+        capture.set(cv2.CAP_PROP_FPS, SETTINGS.fps)
+        capture.set(cv2.CAP_PROP_FRAME_WIDTH, SETTINGS.frame_width)
+        capture.set(cv2.CAP_PROP_FRAME_HEIGHT, SETTINGS.frame_height)
+
+        log.info('摄像头输入参数：')
+        log.info('  视频编码（fourcc/codec）= %d' % int(capture.get(cv2.CAP_PROP_FOURCC)))
+        log.info('  帧速率（FPS）= %d' % int(capture.get(cv2.CAP_PROP_FPS)))
+        log.info('  帧宽度（width）= %d' % int(capture.get(cv2.CAP_PROP_FRAME_WIDTH)))
+        log.info('  帧高度（height）= %d' % int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        return capture
+
+
+    def _to_alignment(self, image) :
         '''
         人脸对齐：从图像中检测人脸，映射/旋转/缩放/裁剪关键点到特定位置和相同尺寸
         :param image: 原始图像
@@ -79,25 +190,25 @@ class FaceMediapipe :
         location_data = detection.location_data
         if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
             box = location_data.relative_bounding_box   # 得到检测到人脸位置的方框标记（坐标是归一化的）
-            width, height = self._get_shape_size(image)       # 原图的宽高
+            width, height = self._get_shape_size(image) # 原图的宽高
 
             # 计算人脸方框的原始坐标
-            left = int(box.xmin * width) - 100
-            upper = int(box.ymin * height) - 100
-            right = int((box.xmin + box.width) * width) + 100
-            down = int((box.ymin + box.height) * height) + 100
+            left = int(box.xmin * width)
+            upper = int(box.ymin * height)
+            right = int((box.xmin + box.width) * width)
+            down = int((box.ymin + box.height) * height)
 
             corp_image = image[upper:down, left:right]  # 裁剪图像，仅保留方框人脸部分
             frame_image = cv2.resize(corp_image, 
                 self.resize_face, 
-                interpolation=cv2.INTER_CUBIC
+                interpolation = cv2.INTER_CUBIC
             )
 
         # 绘制检测到的人脸方框
-        if SETTINGS.show_cv :
-            annotated_image = image.copy()
-            self.mp_drawing.draw_detection(annotated_image, detection)
-            cv2.imshow('Preview Frame Face', annotated_image)
+        if self.args.record or SETTINGS.show_image :
+            annotated_image = cv2.cvtColor(image.copy(), cv2.COLOR_RGB2BGR) # 恢复彩色通道
+            self.mp_drawing.draw_detection(annotated_image, detection)      # 添加 mediapipe 的标注
+            cv2.imshow('Preview Frame Face; Exit <Any Key>', annotated_image)
             cv2.waitKey(0)
         return frame_image
 
