@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 # ----------------------------------------------------------------------
 
 import argparse
-from src.core.adb import adb
+from src.core.adb import ADB_CLIENT, adb
 
 
 def args() :
@@ -30,4 +30,6 @@ def args() :
 
 
 if '__main__' == __name__ :
-    adb(args())
+    print(ADB_CLIENT.test_conn())   # 测试连接
+    ADB_CLIENT.keep_live()          # 测试探活
+    adb(args())                     # 测试打卡
