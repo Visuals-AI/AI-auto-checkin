@@ -44,7 +44,7 @@ camera:                         # 摄像头
 
 
 adb:
-  app: GT                         # 指定当前的 app 的签到步骤（adb 命令集）
+  app: DingDing                         # 指定当前的 app 的签到步骤（adb 命令集）
   keep_live: 30                         # adb 连接保活时间（秒数）
 
 DingDing:
