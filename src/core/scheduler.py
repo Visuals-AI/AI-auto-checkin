@@ -103,7 +103,7 @@ class Scheduler :
                 return False
 
         if work.work_time >= SETTINGS.work_time :
-            log.warn("[取消打卡] 今天已打卡 [%d] 分钟，已满足最低工作时长" % work_time)
+            log.warn("[取消打卡] 今天工作 [%d] 分钟，已满足最低工作时长" % work_time)
             return False
 
         return True
