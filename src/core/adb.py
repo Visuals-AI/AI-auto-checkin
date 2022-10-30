@@ -23,6 +23,14 @@ def adb(args) :
     log.info("执行 adb 指令完成")
 
 
+
+def keep_live() :
+    log.debug("adb 保活 ...")
+    _adb = ADB()
+    _adb.exec([SETTINGS.keep_live_cmd])
+
+
+
 class ADB :
 
     def __init__(self) -> None:

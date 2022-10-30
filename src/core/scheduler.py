@@ -7,7 +7,7 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_compare import FaceCompare
-from src.core.adb import adb
+from src.core.adb import adb, keep_live
 from src.config import SETTINGS
 from color_log.clog import log
 
@@ -29,6 +29,14 @@ class Scheduler :
 
 
     def _set_task(self) :
+        log.info("已设置【ADB 保活】定时任务: ")
+        log.info("循环: [%s] 秒/次" % SETTINGS.keep_live_time)
+        self.scheduler.add_job(
+            keep_live,
+            trigger = self.trigger,
+            second = str(SETTINGS.keep_live_time)
+        )
+
         log.info("已设置【每天上班】自动打卡时间: ")
         log.info("范围: [%02d:00] - [%02d:00]" % (SETTINGS.on_begin_at, SETTINGS.on_end_at))
         log.info("循环: [%s] 分钟/次" % SETTINGS.on_interval)

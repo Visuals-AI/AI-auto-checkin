@@ -62,7 +62,9 @@ class Config :
                 self.frame_height = frame_size.get('height')
 
                 self.adb = context.get('adb')
-                self.keep_live = self.adb.get('keep_live')
+                keep_live = self.adb.get('keep_live')
+                self.keep_live_cmd = keep_live.get('cmd')
+                self.keep_live_time = keep_live.get('interval')
                 self.app_name = self.adb.get('app')
                 self.adb_app = context.get(self.app_name)
                 self.unlock_screen = self.adb_app.get('unlock_screen')
