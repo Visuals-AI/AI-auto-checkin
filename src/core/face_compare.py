@@ -12,7 +12,6 @@ from src.utils.upload_utils import *
 from src.config import SETTINGS
 
 
-
 class FaceCompare(FaceMediapipe) :
 
     def __init__(self, 
@@ -36,7 +35,7 @@ class FaceCompare(FaceMediapipe) :
         '''
         输入人脸图像，比对特征值
         :param camera: 输入模式:  True:摄像头; False:上传图片
-        :return: 库中比对成功的图像
+        :return: 库中相似度最高的图像 ID
         '''
         log.info("请%s要匹配的人脸图像 ..." % ("录制" if camera else "上传"))
         if camera == True :
@@ -44,21 +43,28 @@ class FaceCompare(FaceMediapipe) :
         else :
             imgpath = open_select_one_window(title='请选择需要比对的照片')
         
+        log.info("开始对齐人脸 ...")
+        matched_image_id = ""
         frame_image = self._detecte_face(imgpath)
         if frame_image is None :
             log.warn("未能识别到人脸: [%s]" % imgpath)
-            return
-        log.info("检测方框人像")
+            return matched_image_id
         
+        log.info("正在计算人脸特征值 ...")
         feature = self.calculate_feature(frame_image)
         if not feature :
             log.warn("计算人脸特征值失败: [%s]" % imgpath)
-            return
-        log.info("计算人像特征")
+            return matched_image_id
 
-
-        self._compare(feature)
-        return
+        log.info("正在比对特征相似度 ...")
+        matched_image_id, sim = self._compare(feature)
+        if matched_image_id :
+            log.info("从特征库匹配人脸成功: ")
+            log.info("匹配人脸: %s" % matched_image_id)
+            log.info("相似度: %s" % sim)
+        else :
+            log.warn("从特征库匹配人脸失败")
+        return matched_image_id
     
 
     def _detecte_face(self, imgpath) :
@@ -70,10 +76,7 @@ class FaceCompare(FaceMediapipe) :
         log.info("开始检测图片中的人脸 ...")
 
         # 预处理上传/录制的图片参数
-        filename = os.path.split(imgpath)[-1]
-        name = os.path.splitext(filename)[0]
-        suffix = os.path.splitext(filename)[-1]
-        image_id = self._gen_image_id()
+        name, suffix, image_id = self._gen_image_params(imgpath)
         original_path = "%s/%s%s" % (SETTINGS.tmp_dir, image_id, suffix)
         shutil.copyfile(imgpath, original_path)
         log.info("已接收人脸图片: %s" % original_path)
@@ -95,22 +98,37 @@ class FaceCompare(FaceMediapipe) :
         return frame_image
 
 
-    def _compare(self, feature) :
+    def _compare(self, feature, min_sim=SETTINGS.match_min_sim) :
         '''
-        和特征库数据比对
+        和特征库数据比对，返回相似度最大的图像
+        :param feature: 当前人脸特征值
+        :return: (匹配人脸ID:matched_image_id, 匹配相似度:sim)
         '''
-        for id, f in FACE_FEATURE_CACHE.id_features.items() :
-            self._euclidean_distance(feature, f)
+        max_sim = 0
+        image_id = ""
+        for id, lib_feature in FACE_FEATURE_CACHE.id_features.items() :
+            sim = self._euclidean_distance(lib_feature, feature)
+            if sim >= min_sim and max_sim < sim :
+                max_sim = sim
+                image_id = id
+        return (image_id, max_sim)
 
 
+    def _euclidean_distance(self, lib_feature, judge_feature) :
+        '''
+        利用 欧式距离 计算两个特征相似度
+        :param lib_feature: 库存的人脸特征值
+        :param judge_feature: 正在判断的人脸特征值
+        :return: 欧式距离（相似度）
+        '''
+        log.debug("------------------")
+        self._log("库存的特征值", lib_feature, debug=True)
+        self._log("被判断特征值", judge_feature, debug=True)
 
-    def _euclidean_distance(self, feature_1, feature_2) :
-        # print(feature_1)
-        print("=====================")
-        # print(feature_2)
-        A = np.array(feature_1)
-        B = np.array(feature_2)
-        dist = np.linalg.norm(A - B)
-        print(dist)
-        sim = 1.0 / (1.0 + dist) #归一化
-        print(sim)
+        A = np.array(lib_feature)
+        B = np.array(judge_feature)
+        dist = np.linalg.norm(A - B)    # 欧式距离
+        sim = 1.0 / (1.0 + dist)        # 归一化
+
+        log.debug(sim)
+        return sim

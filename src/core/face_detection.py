@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------
 
-import os
 import cv2
 import shutil
 from color_log.clog import log
@@ -59,7 +58,7 @@ class FaceDetection(FaceMediapipe) :
             else :
                 cnt += 1
                 self._save_feature(feature, cache_data)
-                log.info("已保存特征值: [%s ... %s]" % (feature[0], feature[-1]))
+                self._log("已保存特征值", feature)
 
         log.info("成功录入 [%d/%d] 张人脸数据" % (cnt, len(imgpaths)))
         return cnt
@@ -74,10 +73,7 @@ class FaceDetection(FaceMediapipe) :
         log.info("开始检测图片中的人脸 ...")
 
         # 预处理上传/录制的图片参数
-        filename = os.path.split(imgpath)[-1]
-        name = os.path.splitext(filename)[0]
-        suffix = os.path.splitext(filename)[-1]
-        image_id = self._gen_image_id()
+        name, suffix, image_id = self._gen_image_params(imgpath)
         original_path = "%s/%s%s" % (SETTINGS.upload_dir, image_id, suffix)
         shutil.copyfile(imgpath, original_path)
         log.info("已接收人脸图片: %s" % original_path)

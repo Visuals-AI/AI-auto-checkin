@@ -47,6 +47,14 @@ class FaceMediapipe :
         )
 
 
+    def _gen_image_params(self, imgpath) :
+        filename = os.path.split(imgpath)[-1]
+        name = os.path.splitext(filename)[0]
+        suffix = os.path.splitext(filename)[-1]
+        image_id = self._gen_image_id()
+        return (name, suffix, image_id)
+
+
     def _gen_image_id(self) :
         '''
         生成图像的唯一 ID
@@ -57,9 +65,9 @@ class FaceMediapipe :
     
     def _to_box_face(self, image) :
         '''
-        从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
+        人脸对齐：从图像中检测人脸，映射/旋转/缩放/裁剪关键点到特定位置和相同尺寸
         :param image: 原始图像
-        :return: frame_image 统一尺寸的人脸图像; 若检测失败返回 None
+        :return: frame_image 对齐的人脸图像; 若检测失败返回 None
         '''
         frame_image = None
         results = self.face_detection.process(image)
@@ -74,10 +82,10 @@ class FaceMediapipe :
             width, height = self._get_shape_size(image)       # 原图的宽高
 
             # 计算人脸方框的原始坐标
-            left = int(box.xmin * width)
-            upper = int(box.ymin * height)
-            right = int((box.xmin + box.width) * width)
-            down = int((box.ymin + box.height) * height)
+            left = int(box.xmin * width) - 100
+            upper = int(box.ymin * height) - 100
+            right = int((box.xmin + box.width) * width) + 100
+            down = int((box.ymin + box.height) * height) + 100
 
             corp_image = image[upper:down, left:right]  # 裁剪图像，仅保留方框人脸部分
             frame_image = cv2.resize(corp_image, 
@@ -112,7 +120,7 @@ class FaceMediapipe :
     def calculate_feature(self, image) :
         '''
         计算人脸特征值
-        :param image: 统一尺寸的人脸图片对象
+        :param image: 对齐的人脸图像
         :return: 特征值
         '''
         feature = []
@@ -153,13 +161,27 @@ class FaceMediapipe :
         :param coords: (x,y,z) 坐标数组（归一化）
         :return: 特征值
         '''
-        feature = []
+        # feature = []
+        # size = len(coords)
+        # group_num = size / 3                        # 每 3 个坐标一组，分别组成方阵
+        # groups = np.array_split(coords, group_num)
+        # for group in groups :                       # 迭代每组方阵
+        #     eigen, vector = np.linalg.eig(group)    # 计算 特征值(1x3矩阵) 和 特征向量(3x3矩阵)
+        #     feature.extend(eigen)                   # 串接 特征值
+        # return feature
+
         size = len(coords)
-        group_num = size / 3                        # 每 3 个坐标一组，分别组成方阵
-        groups = np.array_split(coords, group_num)
-        for group in groups :                       # 迭代每组方阵
-            eigen, vector = np.linalg.eig(group)    # 计算 特征值(1x3矩阵) 和 特征向量(3x3矩阵)
-            feature.extend(eigen)                   # 串接 特征值
+        feature = []
+        for i in range(size - 1) :
+            a = coords[i]
+            b = coords[i + 1]
+            d = np.linalg.norm(a - b)
+            feature.append(d)
+
+        a = coords[size - 1]
+        b = coords[0]
+        d = np.linalg.norm(a - b)
+        feature.append(d)
         return feature
 
 
@@ -170,4 +192,12 @@ class FaceMediapipe :
         :return: 字符串
         '''
         return FEATURE_SPLIT.join(str(v) for v in feature)
+
+
+    def _log(self, desc, feature, debug=False) :
+        msg = "%s: [%s ... %s]" % (desc, feature[0], feature[-1])
+        if debug :
+            log.debug(msg)
+        else :
+            log.info(msg)
 

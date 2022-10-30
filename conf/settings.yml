@@ -19,6 +19,7 @@ mediapipe:                      # flase 时，结束监听后无法关闭后台�
   resize_face:                  # 录入人脸时，框取人脸部分并调整保存的尺寸
     width: 512
     height: 512
+  match_min_sim: 0.75           # 匹配人脸的最小相似度
 
 
 video_capture_card:             # 视频采集卡

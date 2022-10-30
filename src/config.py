@@ -43,6 +43,7 @@ class Config :
                 resize_face = self.mediapipe.get('resize_face')
                 self.face_width = resize_face.get('width')
                 self.face_height = resize_face.get('height')
+                self.match_min_sim = max(0.5, float(self.mediapipe.get('match_min_sim')))
 
                 device = context.get('video_capture_card')
                 self.dev_idx = int(device.get('index') or 0)

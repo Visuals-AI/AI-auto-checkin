@@ -38,3 +38,7 @@ L2抑制 https://blog.csdn.net/u010725283/article/details/79212762
 
 
 https://www.jianshu.com/p/6ed3e26b4ebc?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+
+
+dlib 人脸对齐 https://www.bilibili.com/video/BV1J94y1D7f2/?is_story_h5=false&p=1&share_from=ugc&share_medium=android&share_plat=android&share_session_id=21a0f014-ad8d-419f-b92f-852823a4d623&5种最著名的人脸识别算法和关键特征介绍 share_source=WEIXIN&share_tag=s_i&timestamp=1667087907&unique_k=d1j29L6
+https://blog.csdn.net/tsingsee/article/details/121514932?share_token=8012fabd-4bcb-4d28-abff-823a195e8eaf
