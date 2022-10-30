@@ -6,7 +6,7 @@ app:
   feature_fmt: '.png'           # 特征图片格式
 
 scheduler:                      # 定时任务
-  work_time: 8                  # 工作时长
+  work_time: 600                # 要求工作时长（分钟），默认为 8+2 小时（算上午休时间）
   on_work:                      # 上班卡
     begin_at: '09:00'           # 开始时间
     end_at: '11:00'             # 结束时间

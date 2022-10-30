@@ -6,6 +6,7 @@
 import schedule
 import time
 from color_log.clog import log
+from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_compare import FaceCompare
 from src.utils import adb
 from src.config import SETTINGS
@@ -56,12 +57,14 @@ class Scheduler :
 
     
     def _check_task_conditions(self) :
-        is_Ok = True
-        # 已录入特征值
+        if len(FACE_FEATURE_CACHE.id_names) <= 0 :
+            log.warn("库存中未录入任何人脸特征值")
+            return False
+
         # 已连接 adb
         # 未打卡
         # 已打卡但未满 8H
-        return is_Ok
+        return True
 
 
 

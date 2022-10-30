@@ -6,3 +6,14 @@ CREATE TABLE IF NOT EXISTS `t_face_feature` (
   `s_original_image_path`   TEXT(512),
   `s_feature_image_path`    TEXT(512)
 );
+
+
+CREATE TABLE IF NOT EXISTS `t_checkin` (
+  `i_id`                    INTEGER PRIMARY KEY AUTOINCREMENT,
+  `s_date`                  TEXT(16),
+  `i_checkin_hour`          INTEGER,
+  `i_checkin_minute`        INTEGER,
+  `i_checkout_hour`         INTEGER,
+  `i_checkout_minute`       INTEGER,
+  `i_work_time`             INTEGER
+);
