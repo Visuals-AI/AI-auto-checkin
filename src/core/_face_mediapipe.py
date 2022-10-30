@@ -94,7 +94,7 @@ class FaceMediapipe :
             )
 
         # 绘制检测到的人脸方框
-        if SETTINGS.debug :
+        if SETTINGS.show_cv :
             annotated_image = image.copy()
             self.mp_drawing.draw_detection(annotated_image, detection)
             cv2.imshow('Preview Frame Face', annotated_image)

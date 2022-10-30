@@ -24,22 +24,13 @@ database:
   sqlpath: './data/script/ai-checkin-create.sql'
 
 
-mediapipe:                      # flase 时，结束监听后无法关闭后台进程
+mediapipe:
   show_cv: 'true'               # 绘制画面的总开关（包括识别前的原画面，和识别后的关键坐标画面），关闭后相当于在后台运行，可以适当提高一些帧率
-  frequency: 2                  # 识别图像时的频率，每隔 N 帧识别一次（0 表示每帧都识别，值越大画面延迟越小，一般 2 为正常速率）
-  resize_face:                  # 录入人脸时，框取人脸部分并调整保存的尺寸
-    width: 512
-    height: 512
   match_min_sim: 0.75           # 匹配人脸的最小相似度
 
 
 camera:                         # 摄像头
   index: 0                      # 设备索引号（默认 0）
-  fourcc: 'MJPG'                # 输入格式（4个字符表示的视频编码格式）
-  fps: 60                       # 输入帧速率
-  frame:                        # 每帧的输入尺寸（即 AI 得到的屏幕尺寸，可执行 get_camera_size.py 脚本获得）
-    width: 1366
-    height: 768
 
 
 adb:
