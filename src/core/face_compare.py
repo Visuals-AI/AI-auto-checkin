@@ -37,14 +37,17 @@ class FaceCompare(FaceMediapipe) :
         :param camera: 输入模式:  True:摄像头; False:上传图片
         :return: 库中相似度最高的图像 ID
         '''
+        matched_image_id = ""
         log.info("请%s要匹配的人脸图像 ..." % ("录制" if camera else "上传"))
         if camera == True :
             imgpath = open_camera()
         else :
             imgpath = open_select_one_window(title='请选择需要比对的照片')
-        
+        if not imgpath :
+            log.warn("%s的图像异常 : %s" % (("录制" if camera else "上传"), imgpath))
+            return matched_image_id
+
         log.info("开始对齐人脸 ...")
-        matched_image_id = ""
         frame_image = self._detecte_face(imgpath)
         if frame_image is None :
             log.warn("未能识别到人脸: [%s]" % imgpath)

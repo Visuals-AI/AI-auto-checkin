@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------
 
+import os
 import uuid
 import cv2
 import mediapipe as mp
@@ -9,7 +10,6 @@ import numpy as np
 from color_log.clog import log
 from pypdm.dbc._sqlite import SqliteDBC
 from src.dao.t_face_feature import TFaceFeatureDao
-from src.utils.upload_utils import *
 from src.config import SETTINGS, FEATURE_SPLIT
 
 

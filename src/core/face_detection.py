@@ -37,13 +37,16 @@ class FaceDetection(FaceMediapipe) :
         :param camera: 录入模式:  True:摄像头; False:上传图片
         :return: 录入成功的人脸数
         '''
+        cnt = 0
         log.info("请%s人脸图像，用于生成特征值 ..." % ("录制" if camera else "上传"))
         if camera == True :
             imgpaths = open_camera()
         else :
             imgpaths = open_select_multi_window(title='请选择需要录入特征库的照片')
+        if not imgpath :
+            log.warn("%s的图像异常 : %s" % (("录制" if camera else "上传"), imgpath))
+            return cnt
         
-        cnt = 0
         for imgpath in imgpaths :
             frame_image, cache_data = self._detecte_face(imgpath)
             if frame_image is None :

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------
 
+import tkinter
 from tkinter import filedialog
 import os
 
@@ -17,23 +18,30 @@ FILETYPE = [
 
 # 请求选择一个文件
 def open_select_one_window(title="Please select one file:") :
+    tk = tkinter.Tk()
+    tk.withdraw()     # 隐藏 tk 窗体
     filepath = filedialog.askopenfilename(
         initialdir = os.getcwd(),
         title = title,
         filetypes = FILETYPE
     )
+    tk.destroy()      # 销毁 tk 窗体
     return filepath
 
 
 # 请求选择一个或多个文件
 def open_select_multi_window(title="Please select one or more files:") :
+    tk = tkinter.Tk()
+    tk.withdraw()     # 隐藏 tk 窗体
     filepaths = filedialog.askopenfilenames(
         initialdir = os.getcwd(),
         title = title,
         filetypes = FILETYPE
     )
+    tk.destroy()      # 销毁 tk 窗体
     return filepaths
 
 
 def open_camera() :
+    # TODO
     return []
