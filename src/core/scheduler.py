@@ -3,10 +3,12 @@
 # -----------------------------------------------
 
 
+from tabnanny import check
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_compare import FaceCompare
+from src.core.check_inout import CheckInOut
 from src.core.adb import ADB_CLIENT, adb
 from src.config import SETTINGS
 from color_log.clog import log
@@ -19,6 +21,9 @@ class Scheduler :
         self.scheduler = BackgroundScheduler()
         self.trigger = 'cron'
         self._set_task()
+
+        self.fc = FaceCompare()
+        self.cio = CheckInOut()
 
 
     def start(self) :
@@ -66,39 +71,39 @@ class Scheduler :
             return
 
         # 拍摄人脸
-        fc = FaceCompare()
-        image_id = fc.input_face(self.args.camera)
+        image_id = self.fc.input_face(self.args.camera)
         if not image_id :
             return  # 匹配失败
 
         # 执行预设 adb 指令
         adb(self.args)
 
-    
+        # 更新打卡时间
+        self.cio.update_today()
+
+
     def _check_task_conditions(self) :
         if len(FACE_FEATURE_CACHE.id_names) <= 0 :
-            log.warn("库存中未录入任何人脸特征值")
+            log.warn("[取消打卡] 库存中未录入任何人脸特征值")
             return False
 
         if not ADB_CLIENT.test_conn() :
-            log.warn("未连接 adb 设备")
+            log.warn("[取消打卡] 未连接 adb 设备")
             return False
 
-        # 截止当前时间未满 8H
-        # 已打卡且已满 8H
+        work = self.cio.query_today()
+        if work.checkin_hour >= 0 :
+            hour = time.localtime().tm_hour
+            minute = time.localtime().tm_min
+            diff_hour = hour - work.checkin_hour
+            diff_minute = minute - work.checkin_minute
+            work_time = diff_hour * 60 + diff_minute
+            if work_time < SETTINGS.work_time :
+                log.warn("[取消打卡] 上班时长不够，目前仅工作 [%d] 分钟" % work_time)
+                return False
+
+        if work.work_time >= SETTINGS.work_time :
+            log.warn("[取消打卡] 今天已打卡 [%d] 分钟，已满足最低工作时长" % work_time)
+            return False
+
         return True
-
-
-
-
-# 思路：
-#   1. 定时器：到达打卡时间范围（上班/下班各一）
-#   2. 判断今天是否已打卡，若否继续
-#   3. 打开电脑摄像头，通过 AI 人脸识别判断当前屏幕前的是否为本人，若是继续
-#   4. 通过 ADB 指令解锁手机，并进入 APP 打卡
-#   5. 打卡成功，标记今天已打卡，手机锁屏
-#
-#   备注
-#       1. 上班卡: 9:00 开始，只要未打则半小时打一次
-#       2. 下班卡: 18:00 开始，在 ADB 连通的情况下，每隔半小时打一次，直到 24:00
-#       3. 上传人脸图片时，先做初始动作： 框取脸部位置，调整缩放图片的尺寸一致

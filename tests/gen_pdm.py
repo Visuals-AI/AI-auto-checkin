@@ -26,11 +26,10 @@ def generate_pdm(sdbc) :
     paths = build(
         dbc = sdbc,
         pdm_pkg = 'src',
-        table_whitelist = [ 't_face_feature' ],
+        table_whitelist = [ 't_face_feature', 't_checkin' ],
         table_blacklist = [],
         to_log = True
     )
-
 
 
 if '__main__' == __name__ :
