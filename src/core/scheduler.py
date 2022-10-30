@@ -22,7 +22,7 @@ class Scheduler :
         self.trigger = 'cron'
         self._set_task()
 
-        self.fc = FaceCompare()
+        self.fc = FaceCompare(args)
         self.cio = CheckInOut()
 
 
