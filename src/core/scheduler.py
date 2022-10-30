@@ -7,7 +7,7 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.core.face_compare import FaceCompare
-from src.core.adb import adb, keep_live
+from src.core.adb import ADB_CLIENT, adb
 from src.config import SETTINGS
 from color_log.clog import log
 
@@ -30,11 +30,11 @@ class Scheduler :
 
     def _set_task(self) :
         log.info("已设置【ADB 保活】定时任务: ")
-        log.info("循环: [%s] 秒/次" % SETTINGS.keep_live_time)
+        log.info("循环: [%s] 秒/次" % SETTINGS.keep_live)
         self.scheduler.add_job(
-            keep_live,
+            ADB_CLIENT.keep_live,
             trigger = self.trigger,
-            second = str(SETTINGS.keep_live_time)
+            second = str(SETTINGS.keep_live)
         )
 
         log.info("已设置【每天上班】自动打卡时间: ")
@@ -80,7 +80,10 @@ class Scheduler :
             log.warn("库存中未录入任何人脸特征值")
             return False
 
-        # 未连接 adb
+        if not ADB_CLIENT.test_conn() :
+            log.warn("未连接 adb 设备")
+            return False
+
         # 截止当前时间未满 8H
         # 已打卡且已满 8H
         return True

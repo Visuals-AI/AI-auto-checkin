@@ -9,45 +9,37 @@ from color_log.clog import log
 from src.config import SETTINGS
 
 
-def adb(args) :
-    log.info("根据预设步骤执行 adb 指令 ...")
-    _adb = ADB()
-    log.info("解锁手机 ...")
-    _adb.exec(SETTINGS.unlock_screen, { 'password': args.password })
-    log.info("打开目标 APP [%s] ..." % SETTINGS.app_name)
-    _adb.exec(SETTINGS.open_app)
-    log.info("签到 ...")
-    _adb.exec(SETTINGS.check_in)
-    log.info("锁屏 ...")
-    _adb.exec(SETTINGS.lock_screen)
-    log.info("执行 adb 指令完成")
-
-
-
-def keep_live() :
-    log.debug("adb 保活 ...")
-    _adb = ADB()
-    _adb.exec([SETTINGS.keep_live_cmd])
-
-
-
-class ADB :
+class ADBClient :
 
     def __init__(self) -> None:
         self.WAIT_CMD = 'wait '
         self.WAIT_RGX = r'wait (\d+)'
         self.PLACEHOLD = "<%s>"
+        self.CMD_TESTCONN = "adb devices"
+        self.CMD_LIVENESS = "adb shell pwd"
+
+
+    def test_conn(self) :
+        rst = self._syscall(self.CMD_TESTCONN)
+        device = rst.split("\n")[-1]
+        return True if 'device' in device else False
+
+    
+    def keep_live(self) :
+        self._syscall(self.CMD_LIVENESS)
 
 
     def exec(self, cmd_list, params={}) :
         for cmd in cmd_list :
             if cmd.startswith(self.WAIT_CMD) :
-                time.sleep(self._take_time(cmd))
+                interval = self._take_time(cmd)
+                log.debug("等待 %d 秒 ..." % interval)
+                time.sleep(interval)
             else :
                 cmd = self._fill_params(cmd, params)
                 self._adb(cmd)
-        
-    
+
+
     def _take_time(self, cmd) :
         second = 0
         mth = re.match(self.WAIT_RGX, cmd)
@@ -71,3 +63,21 @@ class ADB :
         rst = os.popen(cmd).read().strip() or ''
         # log.debug('执行结果: %s' % rst)
         return rst
+
+
+
+ADB_CLIENT = ADBClient()
+
+
+def adb(args) :
+    log.info("根据预设步骤执行 adb 指令 ...")
+    log.info("解锁手机 ...")
+    ADB_CLIENT.exec(SETTINGS.unlock_screen, { 'password': args.password })
+    log.info("打开目标 APP [%s] ..." % SETTINGS.app_name)
+    ADB_CLIENT.exec(SETTINGS.open_app)
+    log.info("签到 ...")
+    ADB_CLIENT.exec(SETTINGS.check_in)
+    log.info("锁屏 ...")
+    ADB_CLIENT.exec(SETTINGS.lock_screen)
+    log.info("执行 adb 指令完成")
+
