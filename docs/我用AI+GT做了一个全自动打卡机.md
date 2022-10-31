@@ -51,7 +51,7 @@ tags:
 
 ### 0x22 版本二
 
-由于我的工作手机是 Android 的，没多久就想到 [ADB (Android Debug Bridge)](https://developer.android.com/studio/command-line/adb) 了。
+由于我的工作手机是 Android 的，所以我很快就想到借助 [ADB (Android Debug Bridge)](https://developer.android.com/studio/command-line/adb) 工具了。
 
 因此思路转变为：
 
@@ -67,7 +67,7 @@ tags:
 
 但是这个方法纯粹只是通过定时任务触发的，若触发时我不在工位上，手机被解锁，依然会有安全风险。
 
-所以这里还欠缺一个关键条件：**必须只有【我】在工位上！**
+所以这里还欠缺一个关键条件：**必须是【我】在工位上才能解锁手机！**
 
 
 ### 0x30 版本三
