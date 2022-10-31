@@ -55,7 +55,7 @@ sequenceDiagram
     participant ADB
     participant 工作手机
     人脸识别服务->>人脸识别服务: 用摄像头采集<br/>【我】的面部特征
-    Note left of 人脸识别服务: 正脸 & 侧脸
+    Note right of 人脸识别服务: 正脸 & 侧脸
     ADB->>工作手机: 连接
     Note left of 工作手机: 有线
     定时打卡脚本->>定时打卡脚本: 检查打卡时间
