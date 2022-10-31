@@ -97,7 +97,7 @@ tags:
 - 人脸检测（Face Detection）: 这步推荐用开源工具实现，如 MediaPipe、OpenPose、MMPose、dlib、opencv 等都可以实现
 - 人脸对齐（Face Alignment）: 基于检测得到关键点地标，进行归一化和仿射变换（平移/旋转/缩放），目的是把人脸尽可能映射到同一参考系中，提高后续计算的精度
 - 人脸编码（Face Encodings）: 把关键点地标输入神经网络，得到人脸特征值（计算方法目前一般是闭源的），常用的特征值有 128 维，可以代表一张脸
-- 人脸识别（Face Recognition）: 通过计算两个特征值的 欧式距离/余弦距离，得到人脸相似度，即克判断是否为同一人  
+- 人脸比对（Face Compare）: 通过计算两个特征值的 欧式距离/余弦距离，得到人脸相似度，即克判断是否为同一人  
 
 > 这里不涉及活体检测
 
@@ -140,7 +140,7 @@ tags:
 - 点击屏幕某个坐标: `adb shell input tap <x> <y>`
 - 锁屏: `adb shell input keyevent 223`
 
-根据实际手机的屏幕分辨率修改命令坐标，即可实现在任意 Android 手机中模拟人工在 GT 打卡的流程。
+根据实际手机的屏幕分辨率修改命令坐标，即可实现在任意 Android 中模拟手动在 GT 打卡的流程。
 
 
 ## 0x40 成品展示
@@ -151,5 +151,7 @@ tags:
 
 ## 0x50 参考文档
 
-
+- 《[MediaPipe Face Detection](https://google.github.io/mediapipe/solutions/face_detection.html)》
+- 《[欧氏距离和余弦相似度](https://cloud.tencent.com/developer/article/1487432)》
+- 《[正则化的 L2 范数](https://blog.csdn.net/u010725283/article/details/79212762)》
 
