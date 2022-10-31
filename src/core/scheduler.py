@@ -100,7 +100,7 @@ class Scheduler :
             diff_minute = minute - work.checkin_minute
             work_time = diff_hour * 60 + diff_minute
             if work_time < SETTINGS.work_time :
-                log.warn("[取消打卡] 上班时长不够，目前仅工作 [%d] 分钟" % work_time)
+                log.warn("[取消打卡] 上班时长不够，目前仅工作 [%d] 分钟，要求时长 [%d] 分钟" % (work_time, SETTINGS.work_time))
                 return False
 
         if work.work_time >= SETTINGS.work_time :
