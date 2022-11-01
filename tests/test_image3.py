@@ -7,7 +7,8 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-
+import numpy as np
+from skimage import transform
 
 def main() :
     # 导入绘图模块
@@ -29,31 +30,38 @@ def main() :
 
 
     # 读取图片
-    image = cv2.imread('./data/input/09.jpg')
+    image = cv2.imread('./data/input/10.jpg')
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 图片转换到RGB空间
-    results = face_mesh.process(image)      # 使用process方法对图片进行检测，此方法返回所有的人脸468个点的坐标
 
-    annotated_image = cv2.cvtColor(image.copy(), cv2.COLOR_RGB2BGR)
+    mp_face_detection = mp.solutions.face_detection        # 导入人脸检测模块
+    face_detection = mp_face_detection.FaceDetection(
+        model_selection = 0, 
+        min_detection_confidence = 0.5
+    )
+    results = face_detection.process(image)
+    detection = results.detections[0]  
 
-    # 遍历所有人，当 max_num_faces == 1 时，只有 1 组 face_landmarks
-    for face_landmarks in results.multi_face_landmarks:
-
-        # 每个 face_landmarks 有 468 个特征点，利用其进行人脸mesh的绘制
-        # print('face_landmarks:', face_landmarks)
-        mp_drawing.draw_landmarks(
-            image=annotated_image,                              # 需要画图的原始图片
-            landmark_list=face_landmarks,                       # 检测到的人脸坐标
-            connections=mp_face_mesh.FACEMESH_TESSELATION,      # 连接线绘制完全网格，需要把那些坐标连接起来
-            # connections=mp_face_mesh.FACEMESH_CONTOURS,       # 仅连接外围边框，内部点不连接
-            landmark_drawing_spec=drawing_spec,                 # 坐标的颜色，粗细
-            connection_drawing_spec=drawing_spec1               # 连接线的粗细，颜色等
-        )
+    annotated_image = cv2.cvtColor(image.copy(), cv2.COLOR_RGB2BGR) # 恢复彩色通道
+    mp_drawing.draw_detection(annotated_image, detection)
 
     cv2.imshow('annotated_image', annotated_image)              # cv2 显示图片
     cv2.waitKey(0)
-    cv2.imwrite('./data/output/59.png', annotated_image)        # 存储图片
-    face_mesh.close()
+    cv2.imwrite('./data/output/60.png', annotated_image)        # 存储图片
 
+
+def _get_shape_size(image) :
+    '''
+    获取图像的宽高
+    :param image: CV 载入的图像
+    :return: (width, height)
+    '''
+    height = 0
+    width = 0
+    if image is not None :
+        size = image.shape
+        height = size[0]
+        width = size[1]
+    return (width, height)
 
 
 if '__main__' == __name__ :
