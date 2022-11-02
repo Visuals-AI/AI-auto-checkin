@@ -1,9 +1,11 @@
 *.apk
 *.pyc
-*.db
 
 logs/*
 *.log
+
+data/db/*
+*.db
 
 data/tmp/*
 data/input/*
