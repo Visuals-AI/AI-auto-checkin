@@ -20,9 +20,15 @@ class ADBClient :
 
 
     def test_conn(self) :
+        is_conn = False
         rst = self._syscall(self.CMD_TESTCONN)
-        device = rst.split("\n")[-1]
-        return True if 'device' in device else False
+        if 'no devices' in rst :
+            return is_conn
+        
+        lines = rst.split("\n")
+        if len(lines) > 1 and 'device' in lines[-1] :
+            is_conn = True
+        return is_conn
 
     
     def keep_live(self) :
