@@ -37,7 +37,7 @@ class FaceCache :
     def _str_to_feature(self, s_feature) :
         '''
         字符串 转 特征值（复数数组）
-        :param s_feature: 特征值字符串
+        [param] s_feature: 特征值字符串
         :return: 特征值（复数数组）
         '''
         s_feature = byte_to_str(s_feature)

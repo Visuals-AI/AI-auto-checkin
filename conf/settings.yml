@@ -1,8 +1,9 @@
 app:
   debug: 'false'                # 调试模式
-  tmp_dir: './tmp'              # 临时目录
-  upload_dir: './data/upload'   # 存储拍摄/上传原始图片的目录
-  feature_dir: './data/feature' # 初步加工原始图片、得到统一规格的图片存储目录
+  annotated: 'false'            # 绘制标注
+  tmp_dir: './tmp'              # 存储拍摄/上传原始图片的临时目录
+  detection_dir: './data/01_detection' # 人脸检测后的图片存储目录
+  alignment_dir: './data/02_alignment' # 人脸对齐后的图片存储目录
   feature_fmt: '.png'           # 特征图片格式
 
 

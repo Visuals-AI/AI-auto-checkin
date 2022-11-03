@@ -11,7 +11,7 @@ from src.config import SETTINGS
 def upload(filepath) :
     '''
     上传文件到临时目录
-    :param filepath: 文件原始路径
+    [param] filepath: 文件原始路径
     :return: (文件名, 文件后缀, 分配的文件ID, 临时上传路径)
     '''
     name, suffix = _gen_file_params(filepath)
@@ -24,7 +24,7 @@ def upload(filepath) :
 def _gen_file_params(filepath) :
     '''
     提取文件路径信息
-    :param filepath: 文件原始路径
+    [param] filepath: 文件原始路径
     :return: (文件名, 文件后缀, 分配的文件ID)
     '''
     filename = os.path.split(filepath)[-1]

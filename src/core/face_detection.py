@@ -19,11 +19,11 @@ class FaceDetection(FaceMediapipe) :
     ) -> None:
         '''
         构造函数
-        :param args: main 入参
-        :param model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
-        :param static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
-        :param min_detection_confidence: 人脸检测模型的最小置信度值
-        :param min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
+        [param] args: main 入参
+        [param] model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
+        [param] static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
+        [param] min_detection_confidence: 人脸检测模型的最小置信度值
+        [param] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
         FaceMediapipe.__init__(self, args, 
             model_selection, static_image_mode, 
@@ -73,14 +73,14 @@ class FaceDetection(FaceMediapipe) :
     def _detecte_face(self, imgpath) :
         '''
         识别图片中的人像，保存特征值
-        :param imgpath: 图片路径
+        [param] imgpath: 图片路径
         :return: (方框人脸:frame_image, 人脸缓存数据:cache_data)
         '''
         log.info("开始检测图片中的人脸 ...")
 
         # 预处理上传/录制的图片参数
         name, suffix, image_id = self._gen_image_params(imgpath)
-        original_path = "%s/%s%s" % (SETTINGS.upload_dir, image_id, suffix)
+        original_path = "%s/%s%s" % (SETTINGS.original_dir, image_id, suffix)
         shutil.copyfile(imgpath, original_path)
         log.info("已接收人脸图片: %s" % original_path)
 
@@ -91,7 +91,7 @@ class FaceDetection(FaceMediapipe) :
 
         # 保存方框人像数据
         if frame_image is not None :
-            feature_path = "%s/%s%s" % (SETTINGS.feature_dir, image_id, SETTINGS.feature_fmt)
+            feature_path = "%s/%s%s" % (SETTINGS.alignment_dir, image_id, SETTINGS.feature_fmt)
             cv2.imwrite(feature_path, frame_image)
             cache_data = self._save_face(name, image_id, original_path, feature_path)
             log.info("检测到人脸位置，已生成特征图片: %s" % feature_path)
@@ -101,10 +101,10 @@ class FaceDetection(FaceMediapipe) :
     def _save_face(self, name, image_id, original_image_path, feature_image_path) :
         '''
         缓存人脸数据
-        :param name: 图像名称（默认为文件名）
-        :param image_id: 图像 ID（默认自动分配）
-        :param original_image_path: 原始上传/录制的图片路径
-        :param feature_image_path: 方框检测到、并裁剪缩放后的人脸图片
+        [param] name: 图像名称（默认为文件名）
+        [param] image_id: 图像 ID（默认自动分配）
+        [param] original_image_path: 原始上传/录制的图片路径
+        [param] feature_image_path: 方框检测到、并裁剪缩放后的人脸图片
         :return: TFaceFeature
         '''
         bean = TFaceFeature()
@@ -118,8 +118,8 @@ class FaceDetection(FaceMediapipe) :
     def _save_feature(self, feature, cache_data) :
         '''
         保存人脸数据
-        :param feature: 人脸特征值
-        :param cache_data: 人脸缓存数据
+        [param] feature: 人脸特征值
+        [param] cache_data: 人脸缓存数据
         :return: 是否保存成功
         '''
         is_ok = True

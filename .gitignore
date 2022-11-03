@@ -9,7 +9,3 @@ logs/*
 data/db/*
 *.db
 
-data/input/*
-data/output/*
-data/feature/*
-data/upload/*
