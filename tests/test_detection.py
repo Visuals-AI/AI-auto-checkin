@@ -15,6 +15,7 @@ import cv2
 import mediapipe as mp
 from src.utils.ui import open_window_by_select_one, show_image, save_image
 from src.utils.upload import upload
+from src.config import SETTINGS
 
 
 def main() :
@@ -38,16 +39,38 @@ def main() :
     
     # 人脸检测，得到关键点
     results = face_detection.process(rgb_frame)             # 图像检测
-    detection = results.detections[0]                       # 获取关键点
+    for detection_id, detection in enumerate(results.detections):   # 枚举从图像中检测到的每一个人脸
+        handle(detection, fileid, detection_id)
 
-    # 在原图标注关键点
-    annotated_frame = bgr_frame.copy()                      # 复制原图
-    mp_drawing.draw_detection(annotated_frame, detection)   # 在原图绘制标注
-
-    # 显示并保存图像
-    show_image(annotated_frame)
-    save_image(annotated_frame, tmppath)
     os.remove(tmppath)
+
+
+
+def handle(detection, fileid, detection_id) :
+    location_data = detection.location_data
+    if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
+        box = location_data.relative_bounding_box   # 得到检测到人脸位置的方框标记（坐标是归一化的）
+
+        # 计算人脸方框的原始坐标
+        left = int(box.xmin * width)
+        upper = int(box.ymin * height)
+        right = int((box.xmin + box.width) * width)
+        down = int((box.ymin + box.height) * height)
+
+        for i in range(6):  # 枚举 6 个关键点
+            print(f'{mp_face_detection.FaceKeyPoint(i).name}:')
+            coord = face_data.relative_keypoints[mp_face_detection.FaceKeyPoint(i).value]
+            # xy = coord.split("\n")
+            X.append([coord.x * width, coord.y * height])
+
+
+        # 在原图标注关键点
+        annotated_frame = bgr_frame.copy()                      # 复制原图
+        mp_drawing.draw_detection(annotated_frame, detection)   # 在原图绘制标注
+
+        # 显示并保存图像
+        show_image(annotated_frame)
+        save_image(annotated_frame, SETTINGS.detection_dir + "/" + fileid + "-" + detection_id + SETTINGS.feature_fmt)
 
 
 if '__main__' == __name__ :
