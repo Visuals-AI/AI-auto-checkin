@@ -1,13 +1,14 @@
 *.apk
 *.pyc
 
+tmp/*
+
 logs/*
 *.log
 
 data/db/*
 *.db
 
-data/tmp/*
 data/input/*
 data/output/*
 data/feature/*
