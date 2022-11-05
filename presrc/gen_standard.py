@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 import argparse
 from src.utils.ui import *
 from src.core.face_detection2 import FaceDetection
-from src.config import SETTINGS
+from src.config import SETTINGS, CHARSET
 from color_log.clog import log
 
 
@@ -43,9 +43,12 @@ def main(arg) :
     face_detection = FaceDetection()
     face_data = face_detection.handle(imgpath, True)
 
+    width = face_data.width
+    height = face_data.height
     coords = face_data.fkp6_coords
     data = KEY_POINTS_TPL % {
         'imgpath': imgpath, 
+        'width': width, 'height': height, 
         're_x':  coords[0][0], 're_y':  coords[0][1], 
         'le_x':  coords[1][0], 'le_y':  coords[1][1], 
         'nt_x':  coords[2][0], 'nt_y':  coords[2][1], 
@@ -54,15 +57,21 @@ def main(arg) :
         'let_x': coords[5][0], 'let_y': coords[5][1], 
     }
 
-    filename = '%sx%s' % (face_data.width, face_data.height)
+    filename = '%sx%s' % (width, height)
     savepath = '%s/%s' % (SETTINGS.standard_dir, filename)
 
-    with open(savepath, 'w+', encoding=SETTINGS.CHARSET) as file :
+    with open(savepath, 'w+', encoding=CHARSET) as file :
         file.write(data)
+    log.info("生成标准脸尺寸成功")
+    log.info("  人脸来源: %s" % imgpath)
+    log.info("  人脸地标: %s" % savepath)
+    print(PRJ_DIR)
 
 
 
-KEY_POINTS_TPL = '''# src image: %(imgpath)s
+KEY_POINTS_TPL = '''# --------------------------------------
+# src image : %(imgpath)s
+# image size: %(width)s x %(height)s
 # --------------------------------------
 
 # RIGHT_EYE

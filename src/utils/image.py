@@ -109,7 +109,7 @@ def save_frame(frame, savepath=SETTINGS.tmp_dir) :
     try :
         cv2.imwrite(savepath, frame)
         is_ok = True
-        log.warn("保存图像成功: %s" % savepath)
+        log.info("保存图像成功: %s" % savepath)
 
     except :
         log.warn("保存图像失败: %s" % savepath)

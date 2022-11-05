@@ -162,7 +162,8 @@ class FaceMesh :
             landmark_drawing_spec = self.drawing_landmark,              # 坐标的颜色，粗细
             connection_drawing_spec= self.drawing_line                  # 连接线的粗细，颜色等
         )
-        show_image(annotated_frame)
+        if SETTINGS.show_image :
+            show_image(annotated_frame)
 
         # 显示并保存图像
         savepath = '%s/%s-%s%s' % (SETTINGS.mesh_dir, self.fd.image_id, landmarks_id, SETTINGS.image_format)

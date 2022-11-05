@@ -192,7 +192,8 @@ class FaceDetection :
         # 在原图标注关键点
         annotated_frame = self.fd.copy_BGR()                            # 复制原图
         self.mp_drawing.draw_detection(annotated_frame, detection)      # 绘制标注
-        show_image(annotated_frame)
+        if SETTINGS.show_image :
+            show_image(annotated_frame)
 
         # 显示并保存图像
         savepath = '%s/%s-%s%s' % (SETTINGS.detection_dir, self.fd.image_id, detection_id, SETTINGS.image_format)
