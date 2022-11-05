@@ -39,8 +39,8 @@ camera:                         # 摄像头
   fourcc: 'MJPG'                # 输入格式（4个字符表示的视频编码格式）
   fps: 60                       # 输入帧速率
   frame:                        # 每帧的输入尺寸（即 AI 得到的屏幕尺寸，可执行 get_camera_size.py 脚本获得）
-    width: 1366
-    height: 768
+    width: 1280
+    height: 960
 
 
 adb:

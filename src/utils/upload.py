@@ -15,7 +15,7 @@ def upload(filepath, upload_dir) :
     [return] (文件名, 文件后缀, 分配的文件ID, 临时上传路径)
     '''
     name, suffix = _gen_file_params(filepath)
-    fileid = _gen_file_id()
+    fileid = gen_file_id()
     tmppath = "%s/%s%s" % (upload_dir, fileid, suffix)
     shutil.copyfile(filepath, tmppath)
     return (name, suffix, fileid, tmppath)
@@ -33,7 +33,7 @@ def _gen_file_params(filepath) :
     return (name, suffix)
 
 
-def _gen_file_id() :
+def gen_file_id() :
     '''
     生成文件的唯一 ID
     [return] 文件 ID

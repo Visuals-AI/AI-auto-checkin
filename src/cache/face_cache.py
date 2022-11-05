@@ -19,12 +19,16 @@ class FaceCache :
         self.id_features = {}
         self.id_names = {}
 
+
     def load(self) :
         self._load_standard_face()
         self._load_all_features()
 
 
     def _load_standard_face(self) :
+        '''
+        读取标准人脸的关键点地标
+        '''
         filepath = '%s/%s' % (SETTINGS.standard_dir, SETTINGS.standard_face)
         log.info("正在标准脸的关键点地标到内存: %s" % filepath)
         try :
@@ -35,8 +39,8 @@ class FaceCache :
                     if not line or line.startswith("#") :
                         continue
                     coords = line.split(COORD_SPLIT)
-                    x = complex(coords[0])
-                    y = complex(coords[1])
+                    x = float(coords[0])
+                    y = float(coords[1])
                     self.standard_fkp_coords.append([x, y])
 
             log.info("加载标准脸成功: %s" % self.standard_fkp_coords)
@@ -45,6 +49,9 @@ class FaceCache :
 
 
     def _load_all_features(self) :
+        '''
+        读取库存的人脸特征到内存
+        '''
         log.info("正在加载库存的人脸特征到内存 ...")
         self.sdbc.conn()
         beans = self.dao.query_all(self.sdbc)
@@ -56,6 +63,9 @@ class FaceCache :
 
 
     def add(self, bean) :
+        '''
+        添加新的人脸特征到内存
+        '''
         self.id_features[bean.image_id] = self._str_to_feature(bean.feature)
         self.id_names[bean.image_id] = bean.name
     

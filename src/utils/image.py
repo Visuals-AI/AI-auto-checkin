@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # -------------------------------
 
-
 import os
 import enum
 import cv2
@@ -23,7 +22,6 @@ class LabelColor(enum.auto):
     WHITE = (255, 255, 255)
 
 
-
 def get_shape_size(image) :
     '''
     获取图像的宽高
@@ -38,7 +36,6 @@ def get_shape_size(image) :
         width = size[1]
         # channel = size[2]   # 通道数
     return (width, height)
-
 
 
 def gen_trans_matrix(from_matrix, to_matrix) :
