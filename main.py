@@ -5,7 +5,7 @@
 import argparse
 from pypdm.dbc._sqlite import SqliteDBC
 from src.core.scheduler import Scheduler
-from src.cache.face_cache import FACE_FEATURE_CACHE
+from src.cache.face_cache import FACE_CACHE
 from src.core.face_detection import FaceDetection
 from src.config import SETTINGS
 from color_log.clog import log
@@ -49,7 +49,7 @@ def recognise(args) :
     匹配模式
     '''
     log.info("程序启动模式: [人脸匹配模式]")
-    FACE_FEATURE_CACHE.load_all()
+    FACE_CACHE.load()
     scheduler = Scheduler(args)
     scheduler.start()
     

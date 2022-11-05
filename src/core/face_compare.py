@@ -8,7 +8,7 @@ import shutil
 import numpy as np
 from color_log.clog import log
 from src.core._face_mediapipe import FaceMediapipe
-from src.cache.face_cache import FACE_FEATURE_CACHE
+from src.cache.face_cache import FACE_CACHE
 from src.config import SETTINGS
 
 
@@ -103,7 +103,7 @@ class FaceCompare(FaceMediapipe) :
         '''
         max_sim = 0
         image_id = ""
-        for id, lib_feature in FACE_FEATURE_CACHE.id_features.items() :
+        for id, lib_feature in FACE_CACHE.id_features.items() :
             sim = self._euclidean_distance(lib_feature, feature)
             if sim >= min_sim and max_sim < sim :
                 max_sim = sim

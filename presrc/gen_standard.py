@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 import argparse
 from src.utils.ui import *
 from src.core.face_detection2 import FaceDetection
-from src.config import SETTINGS, CHARSET
+from src.config import SETTINGS, CHARSET, COORD_SPLIT
 from color_log.clog import log
 
 
@@ -47,7 +47,7 @@ def main(arg) :
     height = face_data.height
     coords = face_data.fkp6_coords
     data = KEY_POINTS_TPL % {
-        'imgpath': imgpath, 
+        'imgpath': imgpath, 'split': COORD_SPLIT, 
         'width': width, 'height': height, 
         're_x':  coords[0][0], 're_y':  coords[0][1], 
         'le_x':  coords[1][0], 'le_y':  coords[1][1], 
@@ -65,7 +65,6 @@ def main(arg) :
     log.info("生成标准脸尺寸成功")
     log.info("  人脸来源: %s" % imgpath)
     log.info("  人脸地标: %s" % savepath)
-    print(PRJ_DIR)
 
 
 
@@ -75,22 +74,22 @@ KEY_POINTS_TPL = '''# --------------------------------------
 # --------------------------------------
 
 # RIGHT_EYE
-%(re_x)s, %(re_y)s
+%(re_x)s%(split)s%(re_y)s
 
 # LEFT_EYE
-%(le_x)s, %(le_y)s
+%(le_x)s%(split)s%(le_y)s
 
 # NOSE_TIP
-%(nt_x)s, %(nt_y)s
+%(nt_x)s%(split)s%(nt_y)s
 
 # MOUTH_CENTER
-%(mc_x)s, %(mc_y)s
+%(mc_x)s%(split)s%(mc_y)s
 
 # RIGHT_EAR_TRAGION
-%(ret_x)s, %(ret_y)s
+%(ret_x)s%(split)s%(ret_y)s
 
 # LEFT_EAR_TRAGION
-%(let_x)s, %(let_y)s
+%(let_x)s%(split)s%(let_y)s
 '''
 
 

@@ -12,7 +12,7 @@ from tkinter import filedialog
 from color_log.clog import log
 from pypdm.dbc._sqlite import SqliteDBC
 from src.dao.t_face_feature import TFaceFeatureDao
-from src.config import SETTINGS, FEATURE_SPLIT
+from src.config import SETTINGS, COORD_SPLIT
 
 
 EXIT_KEY = 'q'          # 退出 CV 绘制窗口的按键
@@ -303,7 +303,7 @@ class FaceMediapipe :
         [params] feature: 特征值
         [return] 字符串
         '''
-        return FEATURE_SPLIT.join(str(v) for v in feature)
+        return COORD_SPLIT.join(str(v) for v in feature)
 
 
     def _log(self, desc, feature, debug=False) :

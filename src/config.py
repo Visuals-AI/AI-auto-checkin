@@ -14,7 +14,7 @@ from color_log.clog import log
 
 CHARSET = 'utf-8'
 SETTINGS_PATH = '%s/conf/settings.yml' % PRJ_DIR
-FEATURE_SPLIT = ", "    # 特征值格式转换分隔符
+COORD_SPLIT = ", "    # 坐标格式转换分隔符
 
 
 

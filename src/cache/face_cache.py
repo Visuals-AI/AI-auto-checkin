@@ -5,7 +5,8 @@
 from pypdm.dbc._sqlite import SqliteDBC
 from pypdm.assist.num import byte_to_str
 from src.dao.t_face_feature import TFaceFeatureDao
-from src.config import SETTINGS, FEATURE_SPLIT
+from src.cache.face_data import FaceData
+from src.config import SETTINGS, CHARSET, COORD_SPLIT
 from color_log.clog import log
 
 
@@ -14,11 +15,36 @@ class FaceCache :
     def __init__(self) -> None:
         self.sdbc = SqliteDBC(options=SETTINGS.database)
         self.dao = TFaceFeatureDao()
+        self.standard_fkp_coords = []
         self.id_features = {}
         self.id_names = {}
 
+    def load(self) :
+        self._load_standard_face()
+        self._load_all_features()
 
-    def load_all(self) :
+
+    def _load_standard_face(self) :
+        filepath = '%s/%s' % (SETTINGS.standard_dir, SETTINGS.standard_face)
+        log.info("正在标准脸的关键点地标到内存: %s" % filepath)
+        try :
+
+            with open(filepath, 'r', encoding=CHARSET) as file :
+                for line in file.readlines() :
+                    line = line.strip()
+                    if not line or line.startswith("#") :
+                        continue
+                    coords = line.split(COORD_SPLIT)
+                    x = complex(coords[0])
+                    y = complex(coords[1])
+                    self.standard_fkp_coords.append([x, y])
+
+            log.info("加载标准脸成功: %s" % self.standard_fkp_coords)
+        except :
+            log.error("加载标准脸失败")
+
+
+    def _load_all_features(self) :
         log.info("正在加载库存的人脸特征到内存 ...")
         self.sdbc.conn()
         beans = self.dao.query_all(self.sdbc)
@@ -41,8 +67,8 @@ class FaceCache :
         [return] 特征值（复数数组）
         '''
         s_feature = byte_to_str(s_feature)
-        s_floats = s_feature.split(FEATURE_SPLIT)
+        s_floats = s_feature.split(COORD_SPLIT)
         return list(complex(v) for v in s_floats)
 
 
-FACE_FEATURE_CACHE = FaceCache()
+FACE_CACHE = FaceCache()
