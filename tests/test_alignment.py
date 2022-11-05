@@ -18,14 +18,13 @@ from src.utils.image import *
 from src.cache.face_cache import FACE_CACHE
 from src.core.face_detection import FaceDetection
 from src.core.face_alignment import FaceAlignment
-from color_log.clog import log
 
 
 def args() :
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        prog='测试人脸对齐（仿射变换）',
-        description='测试人脸对齐', 
+        prog='测试人脸对齐',
+        description='测试人脸对齐（仿射变换）', 
         epilog='\r\n'.join([
             '摄像头拍摄: ', 
             '  python ./tests/test_alignment.py -c', 

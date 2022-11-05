@@ -193,7 +193,7 @@ class FaceDetection :
             show_image(annotated_frame)
 
         # 保存图像
-        savepath = '%s/%s-%s%s' % (SETTINGS.detection_dir, self.fd.image_id, detection_id, SETTINGS.image_format)
+        savepath = '%s/%s%s' % (SETTINGS.detection_dir, self.fd.image_id, SETTINGS.image_format)
         save_image(annotated_frame, savepath)
 
         # 缓存数据
