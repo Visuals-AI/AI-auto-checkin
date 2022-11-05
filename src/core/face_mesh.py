@@ -58,17 +58,12 @@ class FaceMesh :
         self._reset()
         self._read_image(imgpath)
         self._faces_mesh(label)
-        self._clear()
+        del_image(self.fd.imgpath)
         return self.fd
 
 
     def _reset(self) :
         self.fd = FaceData()
-
-
-    def _clear(self) :
-        if os.path.exists(self.fd.imgpath) :
-            os.remove(self.fd.imgpath)
 
 
     def _read_image(self, imgpath) :
@@ -93,6 +88,7 @@ class FaceMesh :
         results = self.face_mesh.process(self.fd.rgb_frame)                         # 图像检测
         for landmarks_id, landmarks in enumerate(results.multi_face_landmarks):     # 枚举从图像中检测到的每一个人脸
             self._face_mesh(landmarks_id, landmarks, label)
+            break   # 只取图像中的第一人，暂不支持一图多人的情况，主要 FaceData 缓存数据不好处理
 
 
     def _face_mesh(self, landmarks_id, landmarks, label) :
@@ -165,7 +161,7 @@ class FaceMesh :
         if SETTINGS.show_image :
             show_image(annotated_frame)
 
-        # 显示并保存图像
+        # 保存图像
         savepath = '%s/%s-%s%s' % (SETTINGS.mesh_dir, self.fd.image_id, landmarks_id, SETTINGS.image_format)
         save_image(annotated_frame, savepath)
 

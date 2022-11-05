@@ -3,10 +3,15 @@
 # -------------------------------
 
 
+import os
 import enum
 import cv2
+import numpy as np
 from src.config import SETTINGS
 from color_log.clog import log
+
+from skimage import transform
+TRANS_FORM = transform.SimilarityTransform()
 
 
 # 定义图像上标记的颜色
@@ -33,6 +38,21 @@ def get_shape_size(image) :
         width = size[1]
         # channel = size[2]   # 通道数
     return (width, height)
+
+
+
+def gen_trans_matrix(from_matrix, to_matrix) :
+    '''
+    生成从 源矩阵 到 目标矩阵 的仿射变换矩阵
+    [params] from_matrix: 源矩阵
+    [params] to_matrix: 目标矩阵
+    [return] 仿射变换矩阵
+    '''
+    fm = np.array(from_matrix)
+    tm = np.array(to_matrix)
+    TRANS_FORM.estimate(fm, tm)
+    trans_matrix = TRANS_FORM.params[0:2, :]
+    return trans_matrix
 
 
 def show_image(image, exit_key='q', title='Preview Image') :
@@ -115,3 +135,7 @@ def save_frame(frame, savepath=SETTINGS.tmp_dir) :
         log.warn("保存图像失败: %s" % savepath)
     return is_ok
 
+
+def del_image(imgpath) :
+    if os.path.exists(imgpath) :
+        os.remove(imgpath)

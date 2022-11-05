@@ -54,6 +54,9 @@ class Config :
                 self.match_min_sim = max(0.5, float(self.mediapipe.get('match_min_sim')))
                 self.standard_dir = self.mediapipe.get('standard_dir')
                 self.standard_face = self.mediapipe.get('standard_face')
+                swh = self.standard_face.split('x')
+                self.standard_width = int(swh[0])
+                self.standard_height = int(swh[1])
 
                 device = context.get('camera')
                 self.dev_idx = int(device.get('index') or 0)

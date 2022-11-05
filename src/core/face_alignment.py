@@ -3,9 +3,8 @@
 # -----------------------------------------------
 
 import cv2
-import numpy as np
-from skimage import transform
-from src.cache.face_cache import FaceCache
+from src.utils.image import *
+from src.cache.face_cache import FACE_CACHE
 from src.config import SETTINGS
 from color_log.clog import log
 
@@ -23,32 +22,45 @@ class FaceAlignment :
         [params] min_detection_confidence: 人脸检测模型的最小置信度值
         [params] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
+        self.resize = (SETTINGS.standard_width, SETTINGS.standard_height)
     
     
-    def handle(self, face_keypoints) :
+    def handle(self, face_data) :
         '''
         对照标准脸，对输入的人脸进行仿射变换
-        [params] face_keypoints: 人脸检测中获取的五官地标（非归一化）
-        [return]: None
+        [params] face_data: 人脸检测得到的数据
+        [return]: 人脸对齐后的图像
         '''
-        Y = [
-            [204, 297], # RIGHT_EYE
-            [324, 297], # LEFT_EYE
-            [260, 381], # NOSE_TIP
-            [260, 433], # MOUTH_CENTER
-            [145, 312], # RIGHT_EAR_TRAGION
-            [389, 312]  # LEFT_EAR_TRAGION
-        ]
+        face_keypoints = face_data.fkp6_coords
+        trans_matrix = gen_trans_matrix(        # 计算转换矩阵
+            face_keypoints, 
+            FACE_CACHE.standard_fkp_coords
+        )
+        warped_frame = self._face_alignment(face_data, trans_matrix)
+        return warped_frame
         
-        X, Y = np.array(X), np.array(Y)
-        tform = transform.SimilarityTransform()
-        # 程序直接估算出转换矩阵M
-        tform.estimate(X, Y)
-        M = tform.params[0:2, :]
-        print(M)
 
-        annotated_frame = face_data.copy_BGR()
-        warped = cv2.warpAffine(annotated_frame, M, (512, 512), borderValue=0.0)
+    def _face_alignment(self, face_data, trans_matrix) :
+        '''
+        人脸图像仿射变换
+        [params] face_data: 人脸检测得到的数据
+        [params] trans_matrix: 转换矩阵
+        [return]: 人脸对齐后的图像
+        '''
+        bgr_frame = face_data.copy_BGR()
+        warped_frame = cv2.warpAffine(
+            bgr_frame, 
+            trans_matrix, 
+            self.resize, 
+            borderValue = 0.0
+        )
 
-        cv2.imshow('annotated_image', warped)              # cv2 显示图片
+        # 显示变换后的图像
+        if SETTINGS.show_image :
+            show_frame(warped_frame)
+
+        # 保存图像
+        savepath = '%s/%s%s' % (SETTINGS.alignment_dir, face_data.image_id, SETTINGS.image_format)
+        save_image(warped_frame, savepath)
+        return warped_frame
 

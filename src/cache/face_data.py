@@ -4,6 +4,9 @@
 
 
 class FaceData :
+    '''
+    人脸缓存数据（目前只支持单人）
+    '''
 
     def __init__(self) -> None:
         self.name = None                            # 图像文件名
