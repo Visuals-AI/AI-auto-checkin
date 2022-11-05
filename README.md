@@ -31,7 +31,7 @@ mediapipe的坐标已经归一化，需要乘以宽高得到初始坐标 https:/
 L2抑制 https://blog.csdn.net/u010725283/article/details/79212762
 
 - 《[人脸三维关键点检测 + 颜值打分](https://www.bilibili.com/video/BV1ei4y1d7zA/?is_story_h5=false&p=4&share_from=ugc&share_medium=android&share_plat=android&share_session_id=0b5ebe12-cde7-48e8-a079-fd406805866a&share_source=WEIXIN&share_tag=s_i&timestamp=1666659516&unique_k=NommQi6)》
-
+468 个特征点编号 https://blog.csdn.net/weixin_52465909/article/details/122183670
 
 框取人脸 https://blog.csdn.net/weixin_43229348/article/details/120524852
 使用opencv在视频上添加文字和标记框 https://blog.csdn.net/weixin_30852419/article/details/97603572

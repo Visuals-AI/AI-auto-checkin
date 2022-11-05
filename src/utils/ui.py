@@ -7,7 +7,8 @@ import tkinter
 from tkinter import filedialog
 
 
-FILETYPE = [            # 设置文件对话框会显示的文件类型
+# 定义文件对话框会显示的文件类型
+FILETYPE = [
     ('all files', '.*'), 
     ('image files', '.jpg'), 
     ('image files', '.jpeg'), 

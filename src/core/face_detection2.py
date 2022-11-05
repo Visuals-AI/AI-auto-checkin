@@ -24,7 +24,6 @@ class FaceDetection :
         [params] min_detection_confidence: 人脸检测模型的最小置信度值
         [params] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
-
         # 导入绘图模块
         self.mp_drawing = mp.solutions.drawing_utils
 
@@ -65,18 +64,18 @@ class FaceDetection :
         '''
         读取图像参数
         [params] imgpath: 图像路径
-        [return]: None （参数太多且需要交叉引用，临时存储到类变量）
+        [return]: None （参数太多且需要交叉引用，临时存储到类变量 FaceData）
         '''
         self.fd.name, suffix, self.fd.image_id, self.tmppath = upload(imgpath, SETTINGS.tmp_dir)
         self.fd.frame = cv2.imread(self.tmppath)                      # 原图（彩色）
         rgb_frame = cv2.cvtColor(self.fd.frame, cv2.COLOR_BGR2RGB)    # 图片转换到 RGB 通道（反色）
-        self.fd.width, self.fd.height = get_shape_size(rgb_frame)     # 图像宽高
+        self.fd.width, self.fd.height = get_shape_size(rgb_frame)     # 图像宽高深
         return rgb_frame
 
     
     def _faces_detection(self, rgb_frame, label) :
         '''
-        检测图像中所有人脸
+        检测图像中所有人脸方框
         [params] rgb_frame: 读取的图像数据（RGB 通道）
         [params] label: 是否缓存地标坐标
         [return]: None
@@ -88,7 +87,7 @@ class FaceDetection :
 
     def _face_detection(self, detection_id, detection, label) :
         '''
-        检测单个人脸
+        检测单个人脸方框
         [params] detection_id: 人脸检测编号
         [params] detection: 人脸检测数据
         [params] label: 是否缓存地标坐标
@@ -98,13 +97,13 @@ class FaceDetection :
         if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
 
             if label :
-                # 人脸边界和关键点地标（归一化）
+                # 人脸边界和关键点-6 地标（归一化）
                 self.fd.normalized_box_coords = self._get_bounding_box(location_data, True)
-                self.fd.normalized_fkp_coords = self._get_face_keypoints(location_data, True)
+                self.fd.normalized_fkp6_coords = self._get_face_keypoints(location_data, True)
                 
-                # 人脸边界和关键点地标
+                # 人脸边界和关键点-6 地标
                 self.fd.box_coords = self._get_bounding_box(location_data, False)
-                self.fd.fkp_coords = self._get_face_keypoints(location_data, False)
+                self.fd.fkp6_coords = self._get_face_keypoints(location_data, False)
 
             # 保存图像
             self._save_image(detection_id, detection)
@@ -170,25 +169,22 @@ class FaceDetection :
         height = 1 if normalized else self.fd.height
         desc = "（归一化）" if normalized else ''
 
-        log.debug(f'人脸关键点地标{desc}: ')
+        log.debug(f'人脸关键点-6 地标{desc}: ')
         fkp_coords = []
-        KEY_POINTS_NUM = 6
-        for i in range(KEY_POINTS_NUM) :     # 枚举 6 个人脸关键点地标
-            enum_name = self.mp_face_detection.FaceKeyPoint(i).name
-            enum_id = self.mp_face_detection.FaceKeyPoint(i).value
-            coord = location_data.relative_keypoints[enum_id]
-            x = coord.x * width
-            y = coord.y * height
+        for id, keypoint in enumerate(location_data.relative_keypoints) :
+            name = self.mp_face_detection.FaceKeyPoint(id).name
+            x = keypoint.x * width
+            y = keypoint.y * height
             fkp_coords.append([x, y])
-            log.debug(f'  {enum_name}: [{x}, {y}]')
+            log.debug(f'  {name}: [{x}, {y}]')
         return fkp_coords
 
 
     def _save_image(self, detection_id, detection) :
         '''
         保存标注人脸边框和关键点的图像
-        [params] detection_id: 人脸坐标数据
-        [params] detection: 是否获取归一化坐标（默认是）
+        [params] detection_id: 人脸检测编号
+        [params] detection: 人脸检测数据
         [return] 方框的左上角和右下角坐标
             [ 
                 [x-left, y-upper],  
@@ -197,7 +193,7 @@ class FaceDetection :
         '''
         # 在原图标注关键点
         annotated_frame = self.fd.frame.copy()                       # 复制原图
-        self.mp_drawing.draw_detection(annotated_frame, detection)   # 在原图绘制标注
+        self.mp_drawing.draw_detection(annotated_frame, detection)   # 绘制标注
         show_image(annotated_frame)
 
         # 显示并保存图像

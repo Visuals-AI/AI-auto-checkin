@@ -29,7 +29,7 @@ class Config :
                 self.debug = self.app.get('debug')
                 self.annotated = self.app.get('annotated')
                 self.tmp_dir = self.app.get('tmp_dir')
-                self.original_dir = self.app.get('original_dir')
+                self.mesh_dir = self.app.get('mesh_dir')
                 self.detection_dir = self.app.get('detection_dir')
                 self.alignment_dir = self.app.get('alignment_dir')
                 self.image_format = self.app.get('image_format')

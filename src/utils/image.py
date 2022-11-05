@@ -3,9 +3,20 @@
 # -------------------------------
 
 
+import enum
 import cv2
 from src.config import SETTINGS
 from color_log.clog import log
+
+
+# 定义图像上标记的颜色
+class LabelColor(enum.auto):
+    RED = (255, 0, 0)
+    GREEN = (0, 255, 0)
+    BLUE = (0, 0, 255)
+    BLACK = (0, 0, 0)
+    WHITE = (255, 255, 255)
+
 
 
 def get_shape_size(image) :
@@ -18,8 +29,9 @@ def get_shape_size(image) :
     width = 0
     if image is not None :
         size = image.shape
-        height = size[0]
+        height = size[0]    
         width = size[1]
+        # channel = size[2]   # 通道数
     return (width, height)
 
 
