@@ -64,12 +64,11 @@ class FaceMesh :
 
     def _reset(self) :
         self.fd = FaceData()
-        self.tmppath = None
 
 
     def _clear(self) :
-        if os.path.exists(self.tmppath) :
-            os.remove(self.tmppath)
+        if os.path.exists(self.fd.imgpath) :
+            os.remove(self.fd.imgpath)
 
 
     def _read_image(self, imgpath) :
@@ -78,8 +77,8 @@ class FaceMesh :
         [params] imgpath: 图像路径
         [return]: None （参数太多且需要交叉引用，临时存储到类变量 FaceData）
         '''
-        self.fd.name, suffix, self.fd.image_id, self.tmppath = upload(imgpath, SETTINGS.tmp_dir)
-        self.fd.frame = cv2.imread(self.tmppath)                      # 原图（彩色）
+        self.fd.name, suffix, self.fd.image_id, self.fd.imgpath = upload(imgpath, SETTINGS.tmp_dir)
+        self.fd.frame = cv2.imread(self.fd.imgpath)                   # 原图（彩色）
         rgb_frame = cv2.cvtColor(self.fd.frame, cv2.COLOR_BGR2RGB)    # 图片转换到 RGB 通道（反色）
         self.fd.width, self.fd.height = get_shape_size(rgb_frame)     # 图像宽高
         return rgb_frame
@@ -107,10 +106,10 @@ class FaceMesh :
         '''
         if label :
             # 人脸关键点-468 地标（归一化坐标）
-            self.normalized_fkp468_coords = self._get_face_feature(landmarks, True)
+            self.fd.normalized_fkp468_coords = self._get_face_feature(landmarks, True)
 
             # 人脸关键点-468 地标
-            self.fkp468_coords = self._get_face_feature(landmarks, False)
+            self.fd.fkp468_coords = self._get_face_feature(landmarks, False)
 
         # 保存图像
         self._save_image(landmarks_id, landmarks)
@@ -171,5 +170,5 @@ class FaceMesh :
         save_image(annotated_frame, savepath)
 
         # 缓存数据
-        self.fd.detection_frame = annotated_frame
-        self.fd.detection_path = savepath
+        self.fd.mesh_frame = annotated_frame
+        self.fd.mesh_path = savepath
