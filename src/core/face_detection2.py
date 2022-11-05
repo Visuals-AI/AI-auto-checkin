@@ -44,8 +44,8 @@ class FaceDetection :
         [return]: FaceData 缓存数据
         '''
         self._reset()
-        rgb_frame = self._read_image(imgpath)
-        self._faces_detection(rgb_frame, label)
+        self._read_image(imgpath)
+        self._faces_detection(label)
         self._clear()
         return self.fd
 
@@ -66,20 +66,19 @@ class FaceDetection :
         [return]: None （参数太多且需要交叉引用，临时存储到类变量 FaceData）
         '''
         self.fd.name, suffix, self.fd.image_id, self.fd.imgpath = upload(imgpath, SETTINGS.tmp_dir)
-        self.fd.frame = cv2.imread(self.fd.imgpath)                   # 原图（彩色）
-        rgb_frame = cv2.cvtColor(self.fd.frame, cv2.COLOR_BGR2RGB)    # 图片转换到 RGB 通道（反色）
-        self.fd.width, self.fd.height = get_shape_size(rgb_frame)     # 图像宽高深
-        return rgb_frame
+        self.fd.bgr_frame = cv2.imread(self.fd.imgpath)                             # 原图（彩色）
+        self.fd.rgb_frame = cv2.cvtColor(self.fd.bgr_frame, cv2.COLOR_BGR2RGB)      # 图片转换到 RGB 通道（反色）
+        self.fd.width, self.fd.height = get_shape_size(self.fd.rgb_frame)           # 图像宽高深
+        return self.fd.rgb_frame
 
     
-    def _faces_detection(self, rgb_frame, label) :
+    def _faces_detection(self, label) :
         '''
         检测图像中所有人脸方框
-        [params] rgb_frame: 读取的图像数据（RGB 通道）
         [params] label: 是否缓存地标坐标
         [return]: None
         '''
-        results = self.face_detection.process(rgb_frame)               # 图像检测
+        results = self.face_detection.process(self.fd.rgb_frame)       # 图像检测
         for detection_id, detection in enumerate(results.detections):  # 枚举从图像中检测到的每一个人脸
             self._face_detection(detection_id, detection, label)
         
@@ -191,8 +190,8 @@ class FaceDetection :
             ]
         '''
         # 在原图标注关键点
-        annotated_frame = self.fd.frame.copy()                       # 复制原图
-        self.mp_drawing.draw_detection(annotated_frame, detection)   # 绘制标注
+        annotated_frame = self.fd.copy_BGR()                            # 复制原图
+        self.mp_drawing.draw_detection(annotated_frame, detection)      # 绘制标注
         show_image(annotated_frame)
 
         # 显示并保存图像

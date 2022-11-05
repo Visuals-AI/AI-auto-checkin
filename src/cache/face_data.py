@@ -8,7 +8,8 @@ class FaceData :
     def __init__(self) -> None:
         self.name = None                            # 图像文件名
         self.image_id = None                        # 分配的图像 ID
-        self.frame = None                           # 原始图像数据
+        self.bgr_frame = None                       # 原始图像数据（BGR 通道，彩色）
+        self.rgb_frame = None                       # 原始图像数据（RGB 通道，反色）
         self.imgpath = None                         # 原始图像存储位置
         self.width = 0                              # 图像宽度
         self.height = 0                             # 图像高度
@@ -29,6 +30,20 @@ class FaceData :
         self.fkp468_coords = []                     # 人脸关键点-468 地标（原始比例坐标）
         
     
+    def copy_BGR(self) :
+        frame = None
+        if self.bgr_frame is not None :
+            frame = self.bgr_frame.copy()
+        return frame
+
+    
+    def copy_RGB(self) :
+        frame = None
+        if self.rgb_frame is not None :
+            frame = self.rgb_frame.copy()
+        return frame
+
+
     def __repr__(self) :
         return '\n'.join([
             f'[图像 ID ] {self.image_id}', 
@@ -36,7 +51,7 @@ class FaceData :
             f'[图像宽度] {self.width}', 
             f'[图像高度] {self.height}', 
             f'[原始图像路径] {self.imgpath}', 
-            
+
             f'[人脸检测路径] {self.detection_path}', 
             self._print_box_coords(self.normalized_box_coords, True), 
             self._print_box_coords(self.box_coords, False), 

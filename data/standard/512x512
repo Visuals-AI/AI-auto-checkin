@@ -1,0 +1,20 @@
+# src image: ./face/00_standard/吴彦祖-正脸.png
+# --------------------------------------
+
+# RIGHT_EYE
+204, 297
+
+# LEFT_EYE
+324, 297
+
+# NOSE_TIP
+260, 381
+
+# MOUTH_CENTER
+260, 433
+
+# RIGHT_EAR_TRAGION
+145, 312
+
+# LEFT_EAR_TRAGION
+389, 312
