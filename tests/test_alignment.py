@@ -54,4 +54,4 @@ def main(arg) :
 
 
 if '__main__' == __name__ :
-    main()
+    main(args())

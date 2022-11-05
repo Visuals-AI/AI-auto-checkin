@@ -127,12 +127,22 @@ def save_frame(frame, savepath=SETTINGS.tmp_dir) :
         cv2.imwrite(savepath, frame)
         is_ok = True
         log.info("保存图像成功: %s" % savepath)
-
     except :
         log.warn("保存图像失败: %s" % savepath)
     return is_ok
 
 
 def del_image(imgpath) :
-    if os.path.exists(imgpath) :
-        os.remove(imgpath)
+    '''
+    删除图像
+    [params] imgpath: 图像位置
+    [return] 是否删除成功
+    '''
+    if imgpath is None :
+        return False
+
+    if not os.path.exists(imgpath) :
+        return False
+
+    os.remove(imgpath)
+    return True
