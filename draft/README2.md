@@ -71,3 +71,7 @@ sequenceDiagram
         工作手机->>定时打卡脚本: 记录打卡时间
     end
 ```
+
+
+mac install dlib
+https://blog.csdn.net/Robin_Pi/article/details/119909829
