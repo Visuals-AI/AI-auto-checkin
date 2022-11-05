@@ -58,7 +58,7 @@ class Config :
                 self.alignment_resize = (int(swh[0]), int(swh[1]))
 
                 self.dlib = context.get('dlib')
-                self.model_dir = self.dlib.get('model_dir')
+                self.dlib_model_dir = self.dlib.get('model_dir')
                 dlib_model = context.get('model')
                 self.dlib_detection = dlib_model.get('detection')
                 self.dlib_feature = dlib_model.get('feature')

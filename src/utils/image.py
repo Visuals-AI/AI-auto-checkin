@@ -22,16 +22,16 @@ class LabelColor(enum.auto):
     WHITE = (255, 255, 255)
 
 
-def get_shape_size(image) :
+def get_shape_size(frame) :
     '''
     获取图像的宽高
-    [params] image: CV 载入的图像
+    [params] frame: CV 载入的图像
     [return] (width, height)
     '''
     height = 0
     width = 0
-    if image is not None :
-        size = image.shape
+    if frame is not None :
+        size = frame.shape
         height = size[0]    
         width = size[1]
         # channel = size[2]   # 通道数
