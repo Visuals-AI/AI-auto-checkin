@@ -55,8 +55,13 @@ class Config :
                 self.standard_dir = self.mediapipe.get('standard_dir')
                 self.standard_face = self.mediapipe.get('standard_face')
                 swh = self.standard_face.split('x')
-                self.standard_width = int(swh[0])
-                self.standard_height = int(swh[1])
+                self.alignment_resize = (int(swh[0]), int(swh[1]))
+
+                self.dlib = context.get('dlib')
+                self.model_dir = self.dlib.get('model_dir')
+                dlib_model = context.get('model')
+                self.dlib_detection = dlib_model.get('detection')
+                self.dlib_feature = dlib_model.get('feature')
 
                 device = context.get('camera')
                 self.dev_idx = int(device.get('index') or 0)

@@ -22,7 +22,7 @@ class FaceAlignment :
         [params] min_detection_confidence: 人脸检测模型的最小置信度值
         [params] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
-        self.resize = (SETTINGS.standard_width, SETTINGS.standard_height)
+        pass
     
     
     def handle(self, face_data) :
@@ -56,7 +56,7 @@ class FaceAlignment :
         warped_frame = cv2.warpAffine(
             bgr_frame, 
             trans_matrix, 
-            self.resize, 
+            SETTINGS.alignment_resize, 
             borderValue = 0.0
         )
 

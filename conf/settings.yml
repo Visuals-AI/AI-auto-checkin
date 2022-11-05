@@ -34,11 +34,18 @@ mediapipe:
   standard_face: '512x512'        # 当前选择的标准脸尺寸
 
 
-camera:                         # 摄像头
-  index: 0                      # 设备索引号（默认 0）
-  fourcc: 'MJPG'                # 输入格式（4个字符表示的视频编码格式）
-  fps: 60                       # 输入帧速率
-  frame:                        # 每帧的输入尺寸（即 AI 得到的屏幕尺寸，可执行 get_camera_size.py 脚本获得）
+dlib:
+  model_dir: './data/model'       # dlib 模型目录（主要用于计算人脸特征）
+  model:
+    detection: 'shape_predictor_68_face_landmarks.dat'    # 人脸检测模型
+    feature: 'dlib_face_recognition_resnet_model_v1.dat'  # 人脸特征提取模型
+
+
+camera:           # 摄像头
+  index: 0        # 设备索引号（默认 0）
+  fourcc: 'MJPG'  # 输入格式（4个字符表示的视频编码格式）
+  fps: 60         # 输入帧速率
+  frame:          # 每帧的输入尺寸（即 AI 得到的屏幕尺寸，可执行 get_camera_size.py 脚本获得）
     width: 1280
     height: 960
 
