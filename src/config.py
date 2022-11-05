@@ -51,10 +51,9 @@ class Config :
                 self.mediapipe = context.get('mediapipe')
                 self.show_image = self.mediapipe.get('show_image')
                 self.show_video = self.mediapipe.get('show_video')
-                resize_face = self.mediapipe.get('resize_face')
-                self.face_width = resize_face.get('width')
-                self.face_height = resize_face.get('height')
                 self.match_min_sim = max(0.5, float(self.mediapipe.get('match_min_sim')))
+                self.standard_dir = self.mediapipe.get('standard_dir')
+                self.standard_face = self.mediapipe.get('standard_face')
 
                 device = context.get('camera')
                 self.dev_idx = int(device.get('index') or 0)

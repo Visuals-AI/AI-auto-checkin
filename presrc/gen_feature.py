@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # -----------------------------------------------
-# 测试 ADB 指令
+# 预录入特征值
 # python ./presrc/gen_feature.py -c
 # -----------------------------------------------
 
@@ -24,7 +24,7 @@ def args() :
             '摄像头拍摄: ', 
             '  python ./presrc/gen_feature.py -c', 
             '上传人脸图片: ', 
-            '  python ./presrc/gen_feature.py -c', 
+            '  python ./presrc/gen_feature.py', 
         ])
     )
     parser.add_argument('-c', '--camera', dest='camera', action='store_true', default=False, help='摄像头模式; 默认为图片上传模式')

@@ -27,10 +27,11 @@ database:
 
 
 mediapipe:
-  show_image: 'false'           # CV 绘制图像画面的总开关
-  show_video: 'false'           # CV 绘制视频画面的总开关
-  standard_face: '512x512'      # 人脸对齐尺寸
-  match_min_sim: 0.70           # 匹配人脸的最小相似度
+  show_image: 'false'             # CV 绘制图像画面的总开关
+  show_video: 'false'             # CV 绘制视频画面的总开关
+  match_min_sim: 0.70             # 匹配人脸的最小相似度
+  standard_dir: './data/standard' # 已生成的标准脸尺寸目录
+  standard_face: '512x512'        # 当前选择的标准脸尺寸
 
 
 camera:                         # 摄像头
