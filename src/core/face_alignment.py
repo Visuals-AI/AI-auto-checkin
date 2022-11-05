@@ -31,12 +31,17 @@ class FaceAlignment :
         [params] face_data: 人脸检测得到的数据
         [return]: 人脸对齐后的图像
         '''
-        face_keypoints = face_data.fkp6_coords
-        trans_matrix = gen_trans_matrix(        # 计算转换矩阵
-            face_keypoints, 
-            FACE_CACHE.standard_fkp_coords
-        )
-        warped_frame = self._face_alignment(face_data, trans_matrix)
+        warped_frame = None
+        if face_data :
+            try :
+                face_keypoints = face_data.fkp6_coords
+                trans_matrix = gen_trans_matrix(        # 计算转换矩阵
+                    face_keypoints, 
+                    FACE_CACHE.standard_fkp_coords
+                )
+                warped_frame = self._face_alignment(face_data, trans_matrix)
+            except :
+                log.error("人脸对齐模型异常")
         return warped_frame
         
 
@@ -62,5 +67,8 @@ class FaceAlignment :
         # 保存图像
         savepath = '%s/%s%s' % (SETTINGS.alignment_dir, face_data.image_id, SETTINGS.image_format)
         save_image(warped_frame, savepath)
+
+        face_data.alignment_frame = warped_frame
+        face_data.alignment_path = savepath
         return warped_frame
 

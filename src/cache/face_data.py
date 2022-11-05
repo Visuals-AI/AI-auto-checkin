@@ -21,9 +21,6 @@ class FaceData :
         self.detection_path = None                  # 人脸标注后的图像存储位置
         self.normalized_box_coords = []             # 人脸边界框地标（归一化坐标）
         self.box_coords = []                        # 人脸边界框地标（原始比例坐标）
-
-        self.alignment_frame = None                 # 人脸对齐后的图像数据
-        self.alignment_path = None                  # 人脸对齐后的图像存储位置
         self.normalized_fkp6_coords = []            # 人脸关键点-6 地标（归一化坐标）
         self.fkp6_coords = []                       # 人脸关键点-6 地标（原始比例坐标）
 
@@ -31,6 +28,9 @@ class FaceData :
         self.mesh_path = None                       # 人脸网格的图像存储位置
         self.normalized_fkp468_coords = []          # 人脸关键点-468 地标（归一化坐标）
         self.fkp468_coords = []                     # 人脸关键点-468 地标（原始比例坐标）
+
+        self.alignment_frame = None                 # 人脸对齐后的图像数据
+        self.alignment_path = None                  # 人脸对齐后的图像存储位置
         
     
     def copy_BGR(self) :

@@ -41,29 +41,30 @@ class FaceMesh :
         # 导入人脸网格模块
         self.mp_face_mesh = mp.solutions.face_mesh
         self.face_mesh = self.mp_face_mesh.FaceMesh(
-            static_image_mode=True,         # False: 视频流; True: 图片
-            max_num_faces=1,                # 检测人脸个数
-            min_detection_confidence=0.5    # 人脸检测模型的最小置信度值
+            static_image_mode = True,         # False: 视频流; True: 图片
+            max_num_faces = 1,                # 检测人脸个数
+            min_detection_confidence = 0.5    # 人脸检测模型的最小置信度值
         )
     
     
     def handle(self, imgpath, label=False) -> FaceData :
         '''
-        检测图像中所有人脸
+        检测图像中所有人脸网格
         [params] label: 是否缓存地标坐标
-                        默认不缓存，影响返回值的 *box_coords 和 *face_keypoints_coords 地标数据
+                        默认不缓存，影响返回值的 *fkp468_coords 地标数据
                         不缓存可以加速检测，若无必要可以不取这些地标
-        [return]: FaceData 缓存数据
+        [return]: FaceData 缓存数据; 若异常返回 None
         '''
-        self._reset()
-        self._read_image(imgpath)
-        self._faces_mesh(label)
-        del_image(self.fd.imgpath)
+        self.fd = None
+        if imgpath :
+            try : 
+                self.fd = FaceData()
+                self._read_image(imgpath)
+                self._faces_mesh(label)
+                del_image(self.fd.imgpath)
+            except :
+                log.error("人脸网格模型异常")
         return self.fd
-
-
-    def _reset(self) :
-        self.fd = FaceData()
 
 
     def _read_image(self, imgpath) :

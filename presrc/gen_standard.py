@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------
 # 预生成标准脸的五官坐标
-# python ./presrc/gen_standard.py
+# python ./presrc/gen_standard.py [-c]
 # -----------------------------------------------
 
 # 把父级目录（项目根目录）添加到工作路径
@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 
 import argparse
 from src.utils.ui import *
-from src.core.face_detection2 import FaceDetection
+from src.core.face_detection import FaceDetection
 from src.config import SETTINGS, CHARSET, COORD_SPLIT
 from color_log.clog import log
 

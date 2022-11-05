@@ -49,13 +49,15 @@ class FaceMediapipe :
 
         self.mp_face_detection = mp.solutions.face_detection        # 导入人脸检测模块
         self.face_detection = self.mp_face_detection.FaceDetection(
-            model_selection = model_selection, 
-            min_detection_confidence = min_detection_confidence
+            static_image_mode = static_image_mode, 
+            max_num_faces = self.MAX_NUM_FACES,
+            min_detection_confidence = min_detection_confidence,
+            min_tracking_confidence = min_tracking_confidence
         )
 
         self.mp_face_mesh = mp.solutions.face_mesh                  # 导入人脸识别模块
         self.face_mesh = self.mp_face_mesh.FaceMesh(                # 定义一个 mesh 人脸检测器
-            static_image_mode = static_image_mode,         
+            static_image_mode = static_image_mode, 
             max_num_faces = self.MAX_NUM_FACES,
             min_detection_confidence = min_detection_confidence,
             min_tracking_confidence = min_tracking_confidence
