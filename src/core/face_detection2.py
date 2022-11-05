@@ -3,143 +3,207 @@
 # -----------------------------------------------
 
 import cv2
-import shutil
-from color_log.clog import log
-from src.bean.t_face_feature import TFaceFeature
-from src.core._face_mediapipe import FaceMediapipe
-from src.cache.face_cache import FACE_FEATURE_CACHE
-from src.config import SETTINGS
-from src.utils.ui import *
+import mediapipe as mp
+from src.cache.face_data import FaceData
 from src.utils.upload import *
 from src.utils.image import *
+from src.config import SETTINGS
+from color_log.clog import log
 
 
-class FaceDetection(FaceMediapipe) :
+class FaceDetection :
 
-    def __init__(self, args, 
+    def __init__(self, 
         model_selection=0, static_image_mode=False, 
         min_detection_confidence=0.5, min_tracking_confidence=0.5
-    ) -> None:
+    ) :
         '''
         构造函数
-        [params] args: main 入参
         [params] model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
         [params] static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
         [params] min_detection_confidence: 人脸检测模型的最小置信度值
         [params] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
-        FaceMediapipe.__init__(self, args, 
-            model_selection, static_image_mode, 
-            min_detection_confidence, min_tracking_confidence
+
+        # 导入绘图模块
+        self.mp_drawing = mp.solutions.drawing_utils
+
+        # 导入人脸检测模块
+        self.mp_face_detection = mp.solutions.face_detection
+        self.face_detection = self.mp_face_detection.FaceDetection(
+            model_selection = 0, 
+            min_detection_confidence = 0.5
         )
+    
+    
+    def handle(self, imgpath, label=False) -> FaceData :
+        '''
+        检测图像中所有人脸
+        [params] label: 是否缓存地标坐标
+                        默认不缓存，影响返回值的 *box_coords 和 *face_keypoints_coords 地标数据
+                        不缓存可以加速检测，若无必要可以不取这些地标
+        [return]: FaceData 缓存数据
+        '''
+        self._reset()
+        rgb_frame = self._read_image(imgpath)
+        self._faces_detection(rgb_frame, label)
+        self._clear()
+        return self.fd
+
+
+    def _reset(self) :
+        self.fd = FaceData()
+        self.tmppath = None
+
+
+    def _clear(self) :
+        if os.path.exists(self.tmppath) :
+            os.remove(self.tmppath)
+
+
+    def _read_image(self, imgpath) :
+        '''
+        读取图像参数
+        [params] imgpath: 图像路径
+        [return]: None （参数太多且需要交叉引用，临时存储到类变量）
+        '''
+        self.fd.name, suffix, self.fd.image_id, self.tmppath = upload(imgpath, SETTINGS.tmp_dir)
+        self.fd.frame = cv2.imread(self.tmppath)                      # 原图（彩色）
+        rgb_frame = cv2.cvtColor(self.fd.frame, cv2.COLOR_BGR2RGB)    # 图片转换到 RGB 通道（反色）
+        self.fd.width, self.fd.height = get_shape_size(rgb_frame)     # 图像宽高
+        return rgb_frame
 
     
-    def input_face(self) :
+    def _faces_detection(self, rgb_frame, label) :
         '''
-        录入人脸图像，计算特征值
-        [return] 录入成功的人脸数
+        检测图像中所有人脸
+        [params] rgb_frame: 读取的图像数据（RGB 通道）
+        [params] label: 是否缓存地标坐标
+        [return]: None
         '''
-        action = "录制" if self.args.camera else "上传"
-
-        cnt = 0
-        log.info("请%s人脸图像，用于生成特征值 ..." % action)
-        if self.args.camera :
-            imgpaths = self._open_camera()
-        else :
-            imgpaths = self._open_select_multi_window(title='请选择需要录入特征库的照片')
-        if not imgpaths :
-            log.warn("%s的图像异常 : %s" % (action, imgpath))
-            return cnt
-        
-        for imgpath in imgpaths :
-            if not imgpath :
-                log.warn("图片异常: [%s]" % imgpath)
-                continue
-
-            frame_image, cache_data = self._detecte_face(imgpath)
-            if frame_image is None :
-                log.warn("未能识别到人脸，请重新录入: [%s]" % imgpath)
-                continue
-            
-            feature = self.calculate_feature(frame_image)
-            if not feature :
-                log.warn("计算人脸特征值失败: [%s]" % imgpath)
-                continue
-
-            else :
-                cnt += 1
-                self._save_feature(feature, cache_data)
-                self._log("已保存特征值", feature)
-
-        log.info("成功录入 [%d/%d] 张人脸数据" % (cnt, len(imgpaths)))
-        return cnt
+        results = self.face_detection.process(rgb_frame)               # 图像检测
+        for detection_id, detection in enumerate(results.detections):  # 枚举从图像中检测到的每一个人脸
+            self._face_detection(detection_id, detection, label)
         
 
-    def _detecte_face(self, imgpath) :
+    def _face_detection(self, detection_id, detection, label) :
         '''
-        识别图片中的人像，保存特征值
-        [params] imgpath: 图片路径
-        [return] (方框人脸:frame_image, 人脸缓存数据:cache_data)
+        检测单个人脸
+        [params] detection_id: 人脸检测编号
+        [params] detection: 人脸检测数据
+        [params] label: 是否缓存地标坐标
+        [return]: None
         '''
-        log.info("开始检测图片中的人脸 ...")
+        location_data = detection.location_data
+        if location_data.format == location_data.RELATIVE_BOUNDING_BOX:
 
-        # 预处理上传/录制的图片参数
-        name, suffix, image_id = self._gen_image_params(imgpath)
-        original_path = "%s/%s%s" % (SETTINGS.original_dir, image_id, suffix)
-        shutil.copyfile(imgpath, original_path)
-        log.info("已接收人脸图片: %s" % original_path)
+            if label :
+                # 人脸边界和关键点地标（归一化）
+                self.fd.normalized_box_coords = self._get_bounding_box(location_data, True)
+                self.fd.normalized_fkp_coords = self._get_face_keypoints(location_data, True)
+                
+                # 人脸边界和关键点地标
+                self.fd.box_coords = self._get_bounding_box(location_data, False)
+                self.fd.fkp_coords = self._get_face_keypoints(location_data, False)
 
-        # 从图像中检测人脸，并框选裁剪、统一缩放到相同的尺寸
-        image = cv2.imread(original_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 图片转换到 RGB 空间
-        frame_image = self._to_alignment(image)
-
-        # 保存方框人像数据
-        if frame_image is not None :
-            feature_path = "%s/%s%s" % (SETTINGS.alignment_dir, image_id, SETTINGS.image_format)
-            cv2.imwrite(feature_path, frame_image)
-            cache_data = self._save_face(name, image_id, original_path, feature_path)
-            log.info("检测到人脸位置，已生成特征图片: %s" % feature_path)
-        return (frame_image, cache_data)
-
-
-    def _save_face(self, name, image_id, original_image_path, feature_image_path) :
-        '''
-        缓存人脸数据
-        [params] name: 图像名称（默认为文件名）
-        [params] image_id: 图像 ID（默认自动分配）
-        [params] original_image_path: 原始上传/录制的图片路径
-        [params] feature_image_path: 方框检测到、并裁剪缩放后的人脸图片
-        [return] TFaceFeature
-        '''
-        bean = TFaceFeature()
-        bean.name = name
-        bean.image_id = image_id
-        bean.original_image_path = original_image_path
-        bean.feature_image_path = feature_image_path
-        return bean
-
-
-    def _save_feature(self, feature, cache_data) :
-        '''
-        保存人脸数据
-        [params] feature: 人脸特征值
-        [params] cache_data: 人脸缓存数据
-        [return] 是否保存成功
-        '''
-        is_ok = True
-        try :
-            # 添加到数据库
-            self.sdbc.conn()
-            cache_data.feature = self._feature_to_str(feature)
-            self.dao.insert(self.sdbc, cache_data)
-            self.sdbc.close()
-
-            # 添加到缓存
-            FACE_FEATURE_CACHE.add(cache_data)
-
-        except :
-            is_ok = False
-            log.error("保存人脸特征数据到数据库失败")
-        return is_ok
+            # 保存图像
+            self._save_image(detection_id, detection)
         
+
+    def _get_bounding_box(self, location_data, normalized=True) :
+        '''
+        获取人脸边界框地标
+        [params] location_data: 人脸坐标数据
+        [params] normalized: 是否获取归一化坐标（默认是）
+        [return] 方框的左上角和右下角坐标
+            [ 
+                [x-left, y-upper],  
+                [x-right, y-down] 
+            ]
+        '''
+        # 得到检测到人脸位置的方框标记
+        box = location_data.relative_bounding_box   
+        width = 1 if normalized else self.fd.width
+        height = 1 if normalized else self.fd.height
+        desc = "（归一化）" if normalized else ''
+
+        # 计算人脸方框的原始坐标
+        left = box.xmin * width
+        upper = box.ymin * height
+        right = (box.xmin + box.width) * width
+        down = (box.ymin + box.height) * height
+        box_coord = [
+            [left, upper], 
+            [right, down]
+        ]
+
+        log.debug(f'人脸边界框地标{desc}: ')
+        log.debug(f'  左上角: [{left}, {upper}]')
+        log.debug(f'  右下角: [{right}, {down}]')
+        return box_coord
+
+
+    def _get_face_keypoints(self, location_data, normalized=True) :
+        '''
+        获取人脸 6 个关键点地标：
+            https://github.com/google/mediapipe/blob/5fd3701cfd7564b3b6de7120dfc882355675b033/mediapipe/python/solutions/face_detection.py#L46
+            class FaceKeyPoint(enum.IntEnum):
+                RIGHT_EYE = 0
+                LEFT_EYE = 1
+                NOSE_TIP = 2
+                MOUTH_CENTER = 3
+                RIGHT_EAR_TRAGION = 4
+                LEFT_EAR_TRAGION = 5
+        [params] location_data: 人脸坐标数据
+        [params] normalized: 是否获取归一化坐标（默认是）
+        [return] 6 个关键点地标
+            [
+                [x0, y0],   # RIGHT_EYE
+                [x1, y1],   # LEFT_EYE
+                [x2, y2],   # NOSE_TIP
+                [x3, y3],   # MOUTH_CENTER
+                [x4, y4],   # RIGHT_EAR_TRAGION
+                [x5, y5],   # LEFT_EAR_TRAGION
+            ]
+        '''
+        width = 1 if normalized else self.fd.width
+        height = 1 if normalized else self.fd.height
+        desc = "（归一化）" if normalized else ''
+
+        log.debug(f'人脸关键点地标{desc}: ')
+        fkp_coords = []
+        KEY_POINTS_NUM = 6
+        for i in range(KEY_POINTS_NUM) :     # 枚举 6 个人脸关键点地标
+            enum_name = self.mp_face_detection.FaceKeyPoint(i).name
+            enum_id = self.mp_face_detection.FaceKeyPoint(i).value
+            coord = location_data.relative_keypoints[enum_id]
+            x = coord.x * width
+            y = coord.y * height
+            fkp_coords.append([x, y])
+            log.debug(f'  {enum_name}: [{x}, {y}]')
+        return fkp_coords
+
+
+    def _save_image(self, detection_id, detection) :
+        '''
+        保存标注人脸边框和关键点的图像
+        [params] detection_id: 人脸坐标数据
+        [params] detection: 是否获取归一化坐标（默认是）
+        [return] 方框的左上角和右下角坐标
+            [ 
+                [x-left, y-upper],  
+                [x-right, y-down] 
+            ]
+        '''
+        # 在原图标注关键点
+        annotated_frame = self.fd.frame.copy()                       # 复制原图
+        self.mp_drawing.draw_detection(annotated_frame, detection)   # 在原图绘制标注
+        show_image(annotated_frame)
+
+        # 显示并保存图像
+        savepath = '%s/%s-%s%s' % (SETTINGS.detection_dir, self.fd.image_id, detection_id, SETTINGS.image_format)
+        save_image(annotated_frame, savepath)
+
+        # 缓存数据
+        self.fd.detection_frame = annotated_frame
+        self.fd.detection_path = savepath
