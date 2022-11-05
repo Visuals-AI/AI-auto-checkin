@@ -20,11 +20,11 @@ class FaceCompare(FaceMediapipe) :
     ) -> None:
         '''
         构造函数
-        [param] args: main 入参
-        [param] model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
-        [param] static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
-        [param] min_detection_confidence: 人脸检测模型的最小置信度值
-        [param] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
+        [params] args: main 入参
+        [params] model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
+        [params] static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
+        [params] min_detection_confidence: 人脸检测模型的最小置信度值
+        [params] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
         FaceMediapipe.__init__(self, args, 
             model_selection, static_image_mode, 
@@ -35,8 +35,8 @@ class FaceCompare(FaceMediapipe) :
     def input_face(self) :
         '''
         输入人脸图像，比对特征值
-        [param] camera: 输入模式:  True:摄像头; False:上传图片
-        :return: 库中相似度最高的图像 ID
+        [params] camera: 输入模式:  True:摄像头; False:上传图片
+        [return] 库中相似度最高的图像 ID
         '''
         matched_image_id = ""
         log.info("请%s要匹配的人脸图像 ..." % ("录制" if self.args.camera else "上传"))
@@ -75,8 +75,8 @@ class FaceCompare(FaceMediapipe) :
     def _detecte_face(self, imgpath) :
         '''
         识别图片中的人像，保存特征值
-        [param] imgpath: 图片路径
-        :return: (方框人脸:frame_image, 人脸缓存数据:cache_data)
+        [params] imgpath: 图片路径
+        [return] (方框人脸:frame_image, 人脸缓存数据:cache_data)
         '''
         log.info("开始检测图片中的人脸 ...")
 
@@ -98,8 +98,8 @@ class FaceCompare(FaceMediapipe) :
     def _compare(self, feature, min_sim=SETTINGS.match_min_sim) :
         '''
         和特征库数据比对，返回相似度最大的图像
-        [param] feature: 当前人脸特征值
-        :return: (匹配人脸ID:matched_image_id, 匹配相似度:sim)
+        [params] feature: 当前人脸特征值
+        [return] (匹配人脸ID:matched_image_id, 匹配相似度:sim)
         '''
         max_sim = 0
         image_id = ""
@@ -114,9 +114,9 @@ class FaceCompare(FaceMediapipe) :
     def _euclidean_distance(self, lib_feature, judge_feature) :
         '''
         利用 欧式距离 计算两个特征相似度
-        [param] lib_feature: 库存的人脸特征值
-        [param] judge_feature: 正在判断的人脸特征值
-        :return: 欧式距离（相似度）
+        [params] lib_feature: 库存的人脸特征值
+        [params] judge_feature: 正在判断的人脸特征值
+        [return] 欧式距离（相似度）
         '''
         log.debug("------------------")
         self._log("库存的特征值", lib_feature, debug=True)

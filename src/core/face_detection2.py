@@ -9,6 +9,9 @@ from src.bean.t_face_feature import TFaceFeature
 from src.core._face_mediapipe import FaceMediapipe
 from src.cache.face_cache import FACE_FEATURE_CACHE
 from src.config import SETTINGS
+from src.utils.ui import *
+from src.utils.upload import *
+from src.utils.image import *
 
 
 class FaceDetection(FaceMediapipe) :

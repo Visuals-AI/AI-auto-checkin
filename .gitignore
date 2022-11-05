@@ -9,3 +9,5 @@ logs/*
 data/db/*
 *.db
 
+face/01_detection/*
+face/02_alignment/*

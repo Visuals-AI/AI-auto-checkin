@@ -104,8 +104,8 @@ def main() :
 def _get_shape_size(image) :
     '''
     获取图像的宽高
-    [param] image: CV 载入的图像
-    :return: (width, height)
+    [params] image: CV 载入的图像
+    [return] (width, height)
     '''
     height = 0
     width = 0

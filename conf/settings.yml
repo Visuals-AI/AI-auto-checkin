@@ -2,9 +2,9 @@ app:
   debug: 'false'                # 调试模式
   annotated: 'false'            # 绘制标注
   tmp_dir: './tmp'              # 存储拍摄/上传原始图片的临时目录
-  detection_dir: './data/01_detection' # 人脸检测后的图片存储目录
-  alignment_dir: './data/02_alignment' # 人脸对齐后的图片存储目录
-  feature_fmt: '.png'           # 特征图片格式
+  detection_dir: './face/01_detection' # 人脸检测后的图片存储目录
+  alignment_dir: './face/02_alignment' # 人脸对齐后的图片存储目录
+  image_format: '.png'          # 加工图片格式
 
 
 scheduler:                      # 定时任务
@@ -95,6 +95,8 @@ GT:
   check_in:                             # 签到步骤
     - "input tap 543 2051"              # 步骤 1: 点击【应用】按钮坐标
     - "wait 3"
+    - "input tap 896 849"               # 步骤 2: 点击【去打卡】按钮坐标（第一次可能会触发 GPS 检查，多点一次）
+    - "wait 5"
     - "input tap 896 849"               # 步骤 2: 点击【去打卡】按钮坐标
     - "wait 5"
   lock_screen:                          # 锁屏

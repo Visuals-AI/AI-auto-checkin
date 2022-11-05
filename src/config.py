@@ -32,7 +32,7 @@ class Config :
                 self.original_dir = self.app.get('original_dir')
                 self.detection_dir = self.app.get('detection_dir')
                 self.alignment_dir = self.app.get('alignment_dir')
-                self.feature_fmt = self.app.get('feature_fmt')
+                self.image_format = self.app.get('image_format')
 
                 scheduler = context.get('scheduler')
                 self.work_time = scheduler.get('work_time')

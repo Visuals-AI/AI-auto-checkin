@@ -34,11 +34,11 @@ class FaceMediapipe :
     ) -> None:
         '''
         构造函数
-        [param] args: main 入参
-        [param] model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
-        [param] static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
-        [param] min_detection_confidence: 人脸检测模型的最小置信度值
-        [param] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
+        [params] args: main 入参
+        [params] model_selection: 距离模型:  0:短距离模式，适用于 2 米内的人脸; 1:全距离模型，适用于 5 米内的人脸
+        [params] static_image_mode: 人脸识别场景:  True:静态图片; False:视频流
+        [params] min_detection_confidence: 人脸检测模型的最小置信度值
+        [params] min_tracking_confidence: 跟踪模型的最小置信度值（仅视频流有效）
         '''
         self.args = args
         self.MAX_NUM_FACES = 1                                      # 检测人脸个数，此场景下只取 1 个人脸
@@ -65,8 +65,8 @@ class FaceMediapipe :
     def _open_select_one_window(self, title="Please select one file:") :
         '''
         打开系统选择文件窗口（选择一个文件）
-        [param] title: 窗口标题
-        :return: 选择的文件路径
+        [params] title: 窗口标题
+        [return] 选择的文件路径
         '''
         tk = tkinter.Tk()
         tk.withdraw()     # 隐藏 tk 窗体
@@ -82,8 +82,8 @@ class FaceMediapipe :
     def _open_select_multi_window(self, title="Please select one or more files:") :
         '''
         打开系统选择文件窗口（选择多个文件）
-        [param] title: 窗口标题
-        :return: 选择的文件路径
+        [params] title: 窗口标题
+        [return] 选择的文件路径
         '''
         tk = tkinter.Tk()
         tk.withdraw()     # 隐藏 tk 窗体
@@ -107,14 +107,14 @@ class FaceMediapipe :
     def _gen_image_id(self) :
         '''
         生成图像的唯一 ID
-        :return: 图像 ID
+        [return] 图像 ID
         '''
         return uuid.uuid1().hex
 
     
     def _open_camera(self) :
         image_id = self._gen_image_id()
-        imgpath = "%s/%s%s" % (SETTINGS.original_dir, image_id, SETTINGS.feature_fmt)
+        imgpath = "%s/%s%s" % (SETTINGS.original_dir, image_id, SETTINGS.image_format)
 
         capture = self._init_camera()
         is_open = capture.isOpened()
@@ -133,7 +133,7 @@ class FaceMediapipe :
 
             results = self.face_detection.process(frame_data)
             if not results.detections:
-                log.warn("检测人脸位置失败")
+                log.warn("检测人脸位置失败") # FIXME 当检测不到人不在镜头前时会无限触发
                 continue
 
             detection = results.detections[0]   # 此场景下只取 1 张人脸
@@ -178,8 +178,8 @@ class FaceMediapipe :
     def _to_alignment(self, image) :
         '''
         人脸对齐：从图像中检测人脸，映射/旋转/缩放/裁剪关键点到特定位置和相同尺寸
-        [param] image: 原始图像
-        :return: frame_image 对齐的人脸图像; 若检测失败返回 None
+        [params] image: 原始图像
+        [return] frame_image 对齐的人脸图像; 若检测失败返回 None
         '''
         frame_image = None
         results = self.face_detection.process(image)
@@ -217,8 +217,8 @@ class FaceMediapipe :
     def _get_shape_size(self, image) :
         '''
         获取图像的宽高
-        [param] image: CV 载入的图像
-        :return: (width, height)
+        [params] image: CV 载入的图像
+        [return] (width, height)
         '''
         height = 0
         width = 0
@@ -232,8 +232,8 @@ class FaceMediapipe :
     def calculate_feature(self, image) :
         '''
         计算人脸特征值
-        [param] image: 对齐的人脸图像
-        :return: 特征值
+        [params] image: 对齐的人脸图像
+        [return] 特征值
         '''
         feature = []
         log.info("开始计算人脸特征值 ...")
@@ -252,8 +252,8 @@ class FaceMediapipe :
     def _to_coords(self, landmark) :
         '''
         把 人脸特征点的地标 转换为 (x,y,z) 坐标数组
-        [param] landmark: 人脸特征点的地标
-        :return: (x,y,z) 坐标数组（归一化）
+        [params] landmark: 人脸特征点的地标
+        [return] (x,y,z) 坐标数组（归一化）
         '''
         points = np.array(landmark)
 
@@ -270,8 +270,8 @@ class FaceMediapipe :
     def _to_feature(self, coords) :
         '''
         计算 坐标数组 的 特征值
-        [param] coords: (x,y,z) 坐标数组（归一化）
-        :return: 特征值
+        [params] coords: (x,y,z) 坐标数组（归一化）
+        [return] 特征值
         '''
         # feature = []
         # size = len(coords)
@@ -300,8 +300,8 @@ class FaceMediapipe :
     def _feature_to_str(self, feature) :
         '''
         特征值（复数数组）转 字符串
-        [param] feature: 特征值
-        :return: 字符串
+        [params] feature: 特征值
+        [return] 字符串
         '''
         return FEATURE_SPLIT.join(str(v) for v in feature)
 
