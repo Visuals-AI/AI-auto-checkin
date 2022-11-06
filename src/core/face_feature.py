@@ -3,10 +3,10 @@
 # -----------------------------------------------
 
 import dlib
-import numpy as np
 from pypdm.dbc._sqlite import SqliteDBC
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.image import get_shape_size
+from src.utils.common import feature_to_str
 from src.cache.face_cache import FACE_CACHE
 from src.config import SETTINGS
 from color_log.clog import log
@@ -37,16 +37,18 @@ class FaceFeature :
         self.dao = TFaceFeatureDao()
     
     
-    def handle(self, warped_frame) :
+    def handle(self, face_data) :
         '''
         计算人脸特征值
-        [params] warped_frame: 人脸对齐的图像
+        [params] face_data: 人脸对齐后得到的数据
         [return]: 人脸特征值
         '''
         feature = None
-        if warped_frame is not None :
+        if face_data is not None :
             try :
-                feature = self._calculate_feature(warped_frame)
+                alignment_frame = face_data.alignment_frame
+                face_data.feature = self._calculate_feature(alignment_frame)
+                self._save_feature(face_data)
             except :
                 log.error("计算人脸特征值失败")
         return list(feature)
@@ -68,18 +70,17 @@ class FaceFeature :
         return feature
 
 
-    def _save_feature(self, feature, cache_data) :
+    def _save_feature(self, face_data) :
         '''
         保存人脸数据
-        [params] feature: 人脸特征值
-        [params] cache_data: 人脸缓存数据
+        [params] face_data: 人脸对齐后得到的数据
         [return] 是否保存成功
         '''
         is_ok = True
         try :
             # 添加到数据库
             self.sdbc.conn()
-            cache_data.feature = self._feature_to_str(feature)
+            cache_data.feature = feature_to_str(feature)
             self.dao.insert(self.sdbc, cache_data)
             self.sdbc.close()
 

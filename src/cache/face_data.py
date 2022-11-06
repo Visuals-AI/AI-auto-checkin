@@ -31,6 +31,7 @@ class FaceData :
 
         self.alignment_frame = None                 # 人脸对齐后的图像数据
         self.alignment_path = None                  # 人脸对齐后的图像存储位置
+        self.feature = None                         # 人脸特征值
         
     
     def copy_BGR(self) :
@@ -66,6 +67,7 @@ class FaceData :
             self._print_fkp468_coords(self.fkp468_coords, False), 
 
             f'[人脸对齐路径] {self.alignment_path}', 
+            f'[人脸特征值] {self.feature}', 
         ])
 
 

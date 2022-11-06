@@ -31,7 +31,7 @@ class FaceAlignment :
         [params] face_data: 人脸检测得到的数据
         [return]: 人脸对齐后的图像
         '''
-        warped_frame = None
+        alignment_frame = None
         if face_data :
             try :
                 face_keypoints = face_data.fkp6_coords
@@ -39,10 +39,10 @@ class FaceAlignment :
                     face_keypoints, 
                     FACE_CACHE.standard_fkp_coords
                 )
-                warped_frame = self._face_alignment(face_data, trans_matrix)
+                alignment_frame = self._face_alignment(face_data, trans_matrix)
             except :
                 log.error("人脸对齐模型异常")
-        return warped_frame
+        return alignment_frame
         
 
     def _face_alignment(self, face_data, trans_matrix) :
@@ -53,7 +53,7 @@ class FaceAlignment :
         [return]: 人脸对齐后的图像
         '''
         bgr_frame = face_data.copy_BGR()
-        warped_frame = cv2.warpAffine(
+        alignment_frame = cv2.warpAffine(
             bgr_frame, 
             trans_matrix, 
             SETTINGS.alignment_resize, 
@@ -62,13 +62,13 @@ class FaceAlignment :
 
         # 显示变换后的图像
         if SETTINGS.show_image :
-            show_frame(warped_frame)
+            show_frame(alignment_frame)
 
         # 保存图像
         savepath = '%s/%s%s' % (SETTINGS.alignment_dir, face_data.image_id, SETTINGS.image_format)
-        save_image(warped_frame, savepath)
+        save_image(alignment_frame, savepath)
 
-        face_data.alignment_frame = warped_frame
+        face_data.alignment_frame = alignment_frame
         face_data.alignment_path = savepath
-        return warped_frame
+        return alignment_frame
 

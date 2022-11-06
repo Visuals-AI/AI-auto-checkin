@@ -3,9 +3,8 @@
 # -------------------------------
 
 from pypdm.dbc._sqlite import SqliteDBC
-from pypdm.assist.num import byte_to_str
+from src.utils.common import str_to_feature
 from src.dao.t_face_feature import TFaceFeatureDao
-from src.cache.face_data import FaceData
 from src.config import SETTINGS, CHARSET, COORD_SPLIT
 from color_log.clog import log
 
@@ -66,19 +65,9 @@ class FaceCache :
         '''
         添加新的人脸特征到内存
         '''
-        self.id_features[bean.image_id] = self._str_to_feature(bean.feature)
+        self.id_features[bean.image_id] = str_to_feature(bean.feature)
         self.id_names[bean.image_id] = bean.name
     
-
-    def _str_to_feature(self, s_feature) :
-        '''
-        字符串 转 特征值（复数数组）
-        [params] s_feature: 特征值字符串
-        [return] 特征值（复数数组）
-        '''
-        s_feature = byte_to_str(s_feature)
-        s_floats = s_feature.split(COORD_SPLIT)
-        return list(complex(v) for v in s_floats)
 
 
 FACE_CACHE = FaceCache()

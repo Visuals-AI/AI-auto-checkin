@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 # -------------------------------
 
+from src.bean.t_face_feature import TFaceFeature
 from src.utils.device import open_camera
 from src.utils.ui import open_window_by_select_one
-from color_log.clog import log
+from pypdm.assist.num import byte_to_str
+from src.config import SETTINGS, COORD_SPLIT
 
 
 def input_face(camera, is_face_detection=True, is_face_mesh=False, title="请选择需要检测的人脸") :
@@ -20,6 +22,44 @@ def input_face(camera, is_face_detection=True, is_face_mesh=False, title="请选
                 if camera else \
               open_window_by_select_one(title)
     return imgpath
+
+
+def feature_to_str(feature) :
+    '''
+    特征值（浮点数组）转 字符串
+    [params] feature: 特征值
+    [return] 字符串
+    '''
+    return COORD_SPLIT.join(str(v) for v in feature)
+
+
+def str_to_feature(s_feature) :
+    '''
+    字符串 转 特征值（浮点数组）
+    [params] s_feature: 特征值字符串
+    [return] 特征值（浮点数组）
+    '''
+    s_feature = byte_to_str(s_feature)
+    s_floats = s_feature.split(COORD_SPLIT)
+    return list(float(v) for v in s_floats)
+
+
+def face_data_to_bean(face_data) :
+    '''
+    把人脸缓存数据转换为数据表的 bean
+    [params] face_data: 人脸缓存数据
+    [return] 数据表的 bean
+    '''
+    bean = TFaceFeature()
+    bean.name = face_data.name
+    bean.image_id = face_data.image_id
+    bean.feature = feature_to_str(face_data.feature)
+    bean.align_size = SETTINGS.standard_face
+    bean.mesh_image_path = face_data.mesh_path
+    bean.detection_image_path = face_data.detection_path
+    bean.alignment_image_path = face_data.alignment_path
+    return bean
+
 
 
 def to_log(desc, array) :

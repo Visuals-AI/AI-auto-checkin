@@ -50,10 +50,10 @@ def record(args) :
     face_data = face_detection.handle(imgpath, True)
 
     face_alignment = FaceAlignment()
-    warped_frame = face_alignment.handle(face_data)
+    face_alignment.handle(face_data)
 
     face_feature = FaceFeature()
-    feature = face_feature.handle(warped_frame)
+    feature = face_feature.handle(face_data)
     log.info(to_log("人脸特征值", feature))
 
 

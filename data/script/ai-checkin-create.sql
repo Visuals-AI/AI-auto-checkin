@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS `t_face_feature` (
   `f_feature`               TEXT,
   `s_align_size`            TEXT(32),
   `s_mesh_image_path`       TEXT(512),
-  `s_alignment_image_path`  TEXT(512),
-  `s_detection_image_path`  TEXT(512)
+  `s_detection_image_path`  TEXT(512),
+  `s_alignment_image_path`  TEXT(512)
 );
 
 
