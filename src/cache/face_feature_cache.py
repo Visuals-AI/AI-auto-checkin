@@ -4,6 +4,7 @@
 
 from pypdm.dbc._sqlite import SqliteDBC
 from src.utils.common import str_to_feature
+from src.bean.t_face_feature import TFaceFeature
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.config import SETTINGS, CHARSET, COORD_SPLIT
 from color_log.clog import log
@@ -14,6 +15,10 @@ class FaceFeatureCache :
     def __init__(self) -> None:
         self.sdbc = SqliteDBC(options=SETTINGS.database)
         self.dao = TFaceFeatureDao()
+        self.wheres = {
+            f'{TFaceFeature.s_align_size} = ': SETTINGS.standard_face
+        }
+
         self.standard_fkp_coords = []
         self.id_features = {}
         self.id_names = {}
@@ -53,12 +58,18 @@ class FaceFeatureCache :
         '''
         log.info("正在加载库存的人脸特征到内存 ...")
         self.sdbc.conn()
-        beans = self.dao.query_all(self.sdbc)
+        beans = self.dao.query_some(self.sdbc, self.wheres)
         self.sdbc.close()
 
-        for bean in beans :
-            self.add(bean)
-        log.info("缓存人脸特征完成，共 [%d] 个" % len(beans))
+        if len(beans) <= 0 :
+            log.info(f"库中无规格为 {SETTINGS.standard_face} 的人脸特征，请先按步骤录入人脸:")
+            log.info("设置当前规格的标准脸: python ./presrc/gen_standard.py")
+            log.info("录入用于匹配的人脸特征: python ./presrc/gen_feature.py")
+
+        else :
+            for bean in beans :
+                self.add(bean)
+            log.info("缓存人脸特征完成，共 [%d] 个" % len(beans))
 
 
     def add(self, bean) :

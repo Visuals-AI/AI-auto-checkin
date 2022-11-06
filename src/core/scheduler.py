@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------
 
-
-from tabnanny import check
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
+from src.app import record_face_feature, match_face_feature
 from src.cache.face_feature_cache import FACE_FEATURE_CACHE
-from src.core.face_compare import FaceCompare
 from src.core.check_inout import CheckInOut
 from src.core.adb import ADB_CLIENT, adb
 from src.config import SETTINGS
@@ -21,8 +19,6 @@ class Scheduler :
         self.scheduler = BackgroundScheduler()
         self.trigger = 'cron'
         self._set_task()
-
-        self.fc = FaceCompare(args)
         self.cio = CheckInOut()
 
 
@@ -70,10 +66,11 @@ class Scheduler :
             log.warn("未满足执行条件，本轮定时任务取消")
             return
 
-        # 拍摄人脸
-        image_id = self.fc.input_face()
-        if not image_id :
-            log.warn("[取消打卡] 不是本人")
+        # 人脸匹配
+        feature = record_face_feature(self.args)
+        matched_face_id = match_face_feature(feature)
+        if not matched_face_id :
+            log.warn("[取消打卡] 与库中所有人脸均不匹配")
             return
 
         # 执行预设 adb 指令

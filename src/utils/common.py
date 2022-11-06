@@ -9,6 +9,7 @@ from pypdm.assist.num import byte_to_str
 from src.config import SETTINGS, COORD_SPLIT
 
 
+
 def input_face(camera, is_face_detection=True, is_face_mesh=False, title="请选择需要检测的人脸") :
     '''
     输入人脸
@@ -52,7 +53,7 @@ def face_data_to_bean(face_data) :
     '''
     bean = TFaceFeature()
     bean.name = face_data.name
-    bean.image_id = face_data.image_id
+    bean.face_id = face_data.image_id
     bean.feature = feature_to_str(face_data.feature)
     bean.align_size = SETTINGS.standard_face
     bean.mesh_image_path = face_data.mesh_path
@@ -68,8 +69,11 @@ def to_log(desc, array) :
     [params] array: 列表
     [return] 日志内容
     '''
-    size = len(array)
     msg = f"{desc}: []"
+    if array is None :
+        return msg
+
+    size = len(array)
     if size == 1 :
         msg = f"{desc}: [{array[0]}]"
     elif size >= 2 :

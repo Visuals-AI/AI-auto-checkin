@@ -5,12 +5,9 @@
 import argparse
 from pypdm.dbc._sqlite import SqliteDBC
 from src.core.scheduler import Scheduler
+from src.app import record_face_feature
 from src.cache.face_feature_cache import FACE_FEATURE_CACHE
-from src.core.face_detection import FaceDetection
-from src.core.face_alignment import FaceAlignment
-from src.core.face_feature import FaceFeature
 from src.config import SETTINGS
-from src.utils.common import input_face, to_log
 from color_log.clog import log
 
 
@@ -43,18 +40,7 @@ def record(args) :
     录入模式
     '''
     log.info("程序启动模式: [人脸录入模式]")
-    FACE_FEATURE_CACHE.load()
-    imgpath = input_face(args.camera)
-
-    face_detection = FaceDetection()
-    face_data = face_detection.handle(imgpath, True)
-
-    face_alignment = FaceAlignment()
-    face_alignment.handle(face_data)
-
-    face_feature = FaceFeature()
-    feature = face_feature.handle(face_data)
-    log.info(to_log("人脸特征值", feature))
+    record_face_feature(args, True)
 
 
 def recognise(args) :

@@ -6,7 +6,7 @@ import dlib
 from pypdm.dbc._sqlite import SqliteDBC
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.image import get_shape_size
-from src.utils.common import feature_to_str, face_data_to_bean
+from src.utils.common import face_data_to_bean, to_log
 from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 from src.config import SETTINGS
 from color_log.clog import log
@@ -37,21 +37,26 @@ class FaceFeature :
         self.dao = TFaceFeatureDao()
     
     
-    def handle(self, face_data) :
+    def handle(self, face_data, is_save=False) :
         '''
         计算人脸特征值
         [params] face_data: 人脸对齐后得到的数据
+        [params] is_save: 是否保存人脸特征值
         [return]: 人脸特征值
         '''
-        feature = None
+        feature = face_data.feature
         if face_data is not None :
             try :
                 alignment_frame = face_data.alignment_frame
-                face_data.feature = self._calculate_feature(alignment_frame)
-                self._save_feature(face_data)
+                feature = self._calculate_feature(alignment_frame)
+                face_data.feature = feature
+                log.info(to_log("得到人脸特征值", feature))
+
+                if is_save :
+                    self._save_feature(face_data)
             except :
                 log.error("计算人脸特征值失败")
-        return list(feature)
+        return feature
 
 
     def _calculate_feature(self, frame) :
@@ -67,7 +72,7 @@ class FaceFeature :
 
         # 输入 dlib 神经网络，计算 128 维人脸特征值（mediapipe 不提供特征值计算方法）
         feature = self.fr.compute_face_descriptor(frame, shape)
-        return feature
+        return list(feature)
 
 
     def _save_feature(self, face_data) :

@@ -100,6 +100,8 @@ class FaceData :
         info = []
         info.append(f'[人脸网格关键点-468 地标{desc}]: ')
         if len(fkp_coords) == 468 :
-            for id, coord in enumerate(fkp_coords) :
-                info.append(f'  {id}: {coord}')
+            # for id, coord in enumerate(fkp_coords) :
+            #     info.append(f'  {id}: {coord}')
+            info.append(f'  0: {fkp_coords[0]}')
+            info.append(f'  467: {fkp_coords[-1]}')
         return '\n'.join(info)
