@@ -9,14 +9,15 @@ from src.core.face_compare import FaceCompare
 from src.utils.common import input_face
 
 
-def record_face_feature(args, save_feature=False) :
+def record_face_feature(args, show_video=True, save_feature=False) :
     '''
     录入人脸并计算特征值
     [params] args: main 入参
+    [params] show_video: 是否在前台实时显示摄像头画面
     [params] save_feature: 是否保存特征值
     [return] 人脸特征值
     '''
-    imgpath = input_face(args.camera)
+    imgpath = input_face(args.camera, show_video)
 
     face_detection = FaceDetection()
     face_data = face_detection.handle(imgpath, True)
@@ -35,7 +36,9 @@ def match_face_feature(feature) :
     [params] feature: 人脸特征值
     [return] image_id 与库中匹配度最高的人脸 ID
     '''
-    face_compare = FaceCompare()
-    matched_face_id, sim = face_compare.handle(feature)
+    matched_face_id = None
+    if feature is not None :
+        face_compare = FaceCompare()
+        matched_face_id, sim = face_compare.handle(feature)
     return matched_face_id
 

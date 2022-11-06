@@ -164,3 +164,10 @@ Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
 3. 确保手机摄像头对准【你】的脸（如果考勤 APP 不需要人脸考勤则不必）
 4. 配置 [settings.xml](./conf/settings.yml) 中的 `scheduler`，根据实际考勤时间和时长配置
 5. 执行命令 `python .\main.py -c -p {unlock_password}`，其中 `{unlock_password}` 为手机解锁密码
+
+![](./imgs/03.png)
+
+
+## 其他
+
+清除缓存

@@ -10,16 +10,17 @@ from src.config import SETTINGS, COORD_SPLIT
 
 
 
-def input_face(camera, is_face_detection=True, is_face_mesh=False, title="请选择需要检测的人脸") :
+def input_face(camera, show_video=True, is_face_detection=True, is_face_mesh=False, title="请选择需要检测的人脸") :
     '''
     输入人脸
     [params] camera: True 摄像头输入; False 图片上传
+    [params] show_video: 是否在前台实时显示摄像头画面
     [params] is_face_detection: 是否启用人脸检测初筛（仅摄像头模式有效）
     [params] is_face_mesh: 是否启用人脸网格初筛（仅摄像头模式有效）
     [params] title: 窗体标题（仅图片上传模式有效）
     [return] (width, height)
     '''
-    imgpath = open_camera(is_face_detection, is_face_mesh) \
+    imgpath = open_camera(show_video, is_face_detection, is_face_mesh) \
                 if camera else \
               open_window_by_select_one(title)
     return imgpath

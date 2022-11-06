@@ -67,7 +67,7 @@ class Scheduler :
             return
 
         # 人脸匹配
-        feature = record_face_feature(self.args)
+        feature = record_face_feature(self.args, show_video=False)
         matched_face_id = match_face_feature(feature)
         if not matched_face_id :
             log.warn("[取消打卡] 与库中所有人脸均不匹配")

@@ -34,14 +34,13 @@ class FaceFeature :
         [params] is_save: 是否保存人脸特征值
         [return]: 人脸特征值
         '''
-        feature = face_data.feature
+        feature = None
         if face_data is not None :
             try :
                 alignment_frame = face_data.alignment_frame
                 feature = self._calculate_feature(alignment_frame)
                 face_data.feature = feature
                 log.info(to_log("得到人脸特征值", feature))
-
                 if is_save :
                     self._save_feature(face_data)
             except :

@@ -37,7 +37,7 @@ def args() :
 
 
 def test(args) :
-    imgpath = open_camera(args.detection, args.mesh)
+    imgpath = open_camera(True, args.detection, args.mesh)
     log.info(imgpath)
     del_image(imgpath)
 
