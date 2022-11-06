@@ -24,7 +24,8 @@ database:
   dbtype: 'sqlite'
   dbpath: './data/db/ai-checkin.db'
   sqlpath: './data/script/ai-checkin-create.sql'
-
+  check_same_thread: False
+  
 
 mediapipe:
   show_image: 'false'             # CV 绘制图像画面的总开关
