@@ -12,7 +12,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 # ----------------------------------------------------------------------
 
 import argparse
-from main import record
+from src.app import record_face_feature
+from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 
 
 def args() :
@@ -31,6 +32,13 @@ def args() :
     return parser.parse_args()
 
 
+def main(args) :
+    if not FACE_FEATURE_CACHE.load_standard_face() :
+        return
+    record_face_feature(args)
+
+
+
 if '__main__' == __name__ :
-    record(args())
+    main(args())
 

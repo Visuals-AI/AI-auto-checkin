@@ -13,6 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 
 import argparse
 from src.core.adb import ADB_CLIENT, adb
+from color_log.clog import log
 
 
 def args() :
@@ -30,9 +31,10 @@ def args() :
 
 
 def test(args) :
-    print(ADB_CLIENT.test_conn())   # 测试连接
-    ADB_CLIENT.keep_live()          # 测试探活
-    adb(args)                       # 测试打卡
+    is_conn = ADB_CLIENT.test_conn()        # 测试连接
+    log.info(f'ADB is connect: {is_conn}')
+    ADB_CLIENT.keep_live()                  # 测试探活
+    adb(args)                               # 测试打卡
 
 
 if '__main__' == __name__ :

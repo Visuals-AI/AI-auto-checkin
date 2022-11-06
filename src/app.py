@@ -7,7 +7,6 @@ from src.core.face_alignment import FaceAlignment
 from src.core.face_feature import FaceFeature
 from src.core.face_compare import FaceCompare
 from src.utils.common import input_face
-from color_log.clog import log
 
 
 def record_face_feature(args, save_feature=False) :

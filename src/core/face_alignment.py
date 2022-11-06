@@ -32,7 +32,7 @@ class FaceAlignment :
         [return]: 人脸对齐后的图像
         '''
         alignment_frame = None
-        if face_data :
+        if face_data is not None :
             try :
                 face_keypoints = face_data.fkp6_coords
                 trans_matrix = gen_trans_matrix(        # 计算转换矩阵

@@ -40,6 +40,8 @@ def record(args) :
     录入模式
     '''
     log.info("程序启动模式: [人脸录入模式]")
+    if not FACE_FEATURE_CACHE.load_standard_face() :
+        return
     record_face_feature(args, True)
 
 

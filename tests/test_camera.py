@@ -36,11 +36,11 @@ def args() :
     return parser.parse_args()
 
 
-def main(args) :
+def test(args) :
     imgpath = open_camera(args.detection, args.mesh)
     log.info(imgpath)
     del_image(imgpath)
 
 
 if '__main__' == __name__ :
-    main(args())
+    test(args())

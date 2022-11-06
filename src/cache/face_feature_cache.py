@@ -26,12 +26,12 @@ class FaceFeatureCache :
 
     def load(self) :
         is_ok = True
-        is_ok &= self._load_standard_face()
-        is_ok &= self._load_all_features()
+        is_ok &= self.load_standard_face()
+        is_ok &= self.load_all_features()
         return is_ok
 
 
-    def _load_standard_face(self) :
+    def load_standard_face(self) :
         '''
         读取标准人脸的关键点地标
         '''
@@ -49,14 +49,20 @@ class FaceFeatureCache :
                     y = float(coords[1])
                     self.standard_fkp_coords.append([x, y])
 
-            log.info("加载标准脸成功: %s" % self.standard_fkp_coords)
+            if self.standard_fkp_coords :
+                log.info("加载标准脸成功: %s" % self.standard_fkp_coords)
+            else :
+                log.warn(f"未设置尺寸为 [{SETTINGS.standard_face}] 的标准脸地标，请先按步骤设置标准脸:")
+                log.warn(f"  网上搜索任意的标准人脸照片，大小修改为 [{SETTINGS.standard_face}]")
+                log.warn("  设置当前规格的标准脸: python ./presrc/gen_standard.py")
+                is_ok = False
         except :
             is_ok = False
             log.error("加载标准脸失败")
         return is_ok
 
 
-    def _load_all_features(self) :
+    def load_all_features(self) :
         '''
         读取库存的人脸特征到内存
         '''
