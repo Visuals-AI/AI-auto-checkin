@@ -88,8 +88,8 @@ class FaceFeatureCache :
         '''
         添加新的人脸特征到内存
         '''
-        self.id_features[bean.image_id] = str_to_feature(bean.feature)
-        self.id_names[bean.image_id] = bean.name
+        self.id_features[bean.face_id] = str_to_feature(bean.feature)
+        self.id_names[bean.face_id] = bean.name
     
 
 

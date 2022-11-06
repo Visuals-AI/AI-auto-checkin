@@ -35,7 +35,7 @@ def args() :
 def main(args) :
     if not FACE_FEATURE_CACHE.load_standard_face() :
         return
-    record_face_feature(args)
+    record_face_feature(args, True)
 
 
 
