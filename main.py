@@ -48,7 +48,9 @@ def recognise(args) :
     匹配模式
     '''
     log.info("程序启动模式: [人脸匹配模式]")
-    FACE_FEATURE_CACHE.load()
+    if not FACE_FEATURE_CACHE.load() :
+        return
+        
     scheduler = Scheduler(args)
     scheduler.start()
     

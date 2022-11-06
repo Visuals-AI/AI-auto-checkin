@@ -25,18 +25,20 @@ class FaceFeatureCache :
 
 
     def load(self) :
-        self._load_standard_face()
-        self._load_all_features()
+        is_ok = True
+        is_ok &= self._load_standard_face()
+        is_ok &= self._load_all_features()
+        return is_ok
 
 
     def _load_standard_face(self) :
         '''
         读取标准人脸的关键点地标
         '''
+        is_ok = True
         filepath = '%s/%s' % (SETTINGS.standard_dir, SETTINGS.standard_face)
         log.info("正在标准脸的关键点地标到内存: %s" % filepath)
         try :
-
             with open(filepath, 'r', encoding=CHARSET) as file :
                 for line in file.readlines() :
                     line = line.strip()
@@ -49,28 +51,32 @@ class FaceFeatureCache :
 
             log.info("加载标准脸成功: %s" % self.standard_fkp_coords)
         except :
+            is_ok = False
             log.error("加载标准脸失败")
+        return is_ok
 
 
     def _load_all_features(self) :
         '''
         读取库存的人脸特征到内存
         '''
+        is_ok = True
         log.info("正在加载库存的人脸特征到内存 ...")
         self.sdbc.conn()
         beans = self.dao.query_some(self.sdbc, self.wheres)
         self.sdbc.close()
 
         if len(beans) <= 0 :
-            log.info(f"库中无规格为 {SETTINGS.standard_face} 的人脸特征，请先按步骤录入人脸:")
-            log.info("设置当前规格的标准脸: python ./presrc/gen_standard.py")
-            log.info("录入用于匹配的人脸特征: python ./presrc/gen_feature.py")
-
+            log.warn(f"库中无规格为 [{SETTINGS.standard_face}] 的人脸特征，请先按步骤录入人脸:")
+            log.warn("  设置当前规格的标准脸: python ./presrc/gen_standard.py")
+            log.warn("  录入用于匹配的人脸特征: python ./presrc/gen_feature.py")
+            is_ok = False
         else :
             for bean in beans :
                 self.add(bean)
             log.info("缓存人脸特征完成，共 [%d] 个" % len(beans))
-
+        return is_ok
+        
 
     def add(self, bean) :
         '''
