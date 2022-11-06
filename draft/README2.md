@@ -48,29 +48,7 @@ adb shell input tap 896 849
 ```
 
 
-```mermaid
-sequenceDiagram
-    participant 人脸识别服务
-    participant 定时打卡脚本
-    participant ADB
-    participant 工作手机
-    人脸识别服务->>人脸识别服务: 用摄像头采集<br/>【我】的面部特征
-    Note right of 人脸识别服务: 正脸 & 侧脸
-    ADB->>工作手机: 连接
-    Note left of 工作手机: 有线
-    定时打卡脚本->>定时打卡脚本: 检查打卡时间
-    Note right of 定时打卡脚本: 触发打卡脚本
-    loop 自动打卡
-        定时打卡脚本->>人脸识别服务: 激活摄像头画面
-        人脸识别服务->>定时打卡脚本: 识别【我】是否在画面内
-        定时打卡脚本->>ADB: 调用 ADB 指令
-        ADB->>工作手机: 解锁屏幕
-        ADB->>工作手机: 启动 GT
-        ADB->>工作手机: 模拟按键打卡
-        ADB->>工作手机: 锁屏
-        工作手机->>定时打卡脚本: 记录打卡时间
-    end
-```
+
 
 
 mac install dlib
