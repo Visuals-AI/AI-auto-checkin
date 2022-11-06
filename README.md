@@ -137,10 +137,12 @@ Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
 
 1. 配置 [settings.xml](./conf/settings.yml) 中的 `adb.app` ，指定为一个考勤 app 名字（可自定义），如 `DingDing`
 2. 参考 [settings.xml](./conf/settings.yml) 中 `DingDing` 的配置，主要修改 `open_app` 和 `check_in` 的命令列表即可
-3. 命令列表主要有两种：
+3. 需要配置的有两种命令：
     - `input tap <x> <y>`: 模拟手动点击屏幕坐标，坐标值可以截屏后查看
     - `wait <second>`: 点击后等待多少秒生效
+4. 用这两种命令模拟手动打卡的全过程即可:
 
+![](./imgs/05.png)
 
 <details>
 <summary><b>查看手机坐标方法</b></summary>
