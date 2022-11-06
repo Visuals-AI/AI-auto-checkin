@@ -17,8 +17,8 @@ def args() :
         prog='AI 自动签到',
         description='到达打卡时间点时，自动打开摄像头，若 AI 识别摄像头前的为本人时，则通过 ADB 自动解锁手机签到打卡', 
         epilog='\r\n'.join([
-            '录入模式: python .\main.py [-c] -r', 
-            '匹配模式: python .\main.py [-c] -p {unlock_password}',
+            '录入模式: python .\main.py -r [-c]', 
+            '匹配模式: python .\main.py -c -p {unlock_password}',
         ])
     )
     parser.add_argument('-r', '--record', dest='record', action='store_true', default=False, help='录入模式: 用于录入人脸特征点; 默认为匹配模式')

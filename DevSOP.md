@@ -1,3 +1,11 @@
+# 开发者手册
+
+------
+
+本项目的人脸识别依赖 Mediapipe 和 dlib
+
+
+
 adb：连接华为手机 https://cto.eguidedog.net/node/609
 adb 无线： https://blog.csdn.net/ai_qh77/article/details/123383801
 adb： error: device unauthorized. https://stackoverflow.com/questions/23081263/adb-android-device-unauthorized
