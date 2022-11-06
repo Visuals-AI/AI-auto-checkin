@@ -105,8 +105,12 @@ def _init_face_model(show_video, is_face_detection, is_face_mesh) :
     face_detection = None
     face_mesh = None
 
+    # 当摄像头在后台时，若 mesh 没开启
+    if not show_video and not is_face_mesh: 
+        is_face_detection = True    # 则至少把 detection 打开
+
     # 导入人脸检测模块
-    if show_video or is_face_detection :
+    if is_face_detection :
         face_detection = mp.solutions.face_detection.FaceDetection(
             model_selection = model_selection, 
             min_detection_confidence = min_detection_confidence
