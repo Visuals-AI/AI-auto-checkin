@@ -5,7 +5,7 @@
 import argparse
 from pypdm.dbc._sqlite import SqliteDBC
 from src.core.scheduler import Scheduler
-from src.cache.face_cache import FACE_CACHE
+from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 from src.core.face_detection import FaceDetection
 from src.core.face_alignment import FaceAlignment
 from src.core.face_feature import FaceFeature
@@ -43,7 +43,7 @@ def record(args) :
     录入模式
     '''
     log.info("程序启动模式: [人脸录入模式]")
-    FACE_CACHE.load()
+    FACE_FEATURE_CACHE.load()
     imgpath = input_face(args.camera)
 
     face_detection = FaceDetection()
@@ -62,7 +62,7 @@ def recognise(args) :
     匹配模式
     '''
     log.info("程序启动模式: [人脸匹配模式]")
-    FACE_CACHE.load()
+    FACE_FEATURE_CACHE.load()
     scheduler = Scheduler(args)
     scheduler.start()
     

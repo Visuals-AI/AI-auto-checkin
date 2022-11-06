@@ -19,7 +19,7 @@ def args() :
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         prog='预录入目标人脸的特征值',
-        description='提前录入人脸特征值，用于人脸比对时匹配', 
+        description='通过 dlib 模型计算人脸 128 维特征，用于人脸比对时匹配', 
         epilog='\r\n'.join([
             '摄像头拍摄: ', 
             '  python ./presrc/gen_feature.py -c', 

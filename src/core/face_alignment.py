@@ -4,7 +4,7 @@
 
 import cv2
 from src.utils.image import *
-from src.cache.face_cache import FACE_CACHE
+from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 from src.config import SETTINGS
 from color_log.clog import log
 
@@ -37,7 +37,7 @@ class FaceAlignment :
                 face_keypoints = face_data.fkp6_coords
                 trans_matrix = gen_trans_matrix(        # 计算转换矩阵
                     face_keypoints, 
-                    FACE_CACHE.standard_fkp_coords
+                    FACE_FEATURE_CACHE.standard_fkp_coords
                 )
                 alignment_frame = self._face_alignment(face_data, trans_matrix)
             except :

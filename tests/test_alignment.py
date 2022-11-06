@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 
 import argparse
 from src.utils.common import input_face
-from src.cache.face_cache import FACE_CACHE
+from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 from src.core.face_detection import FaceDetection
 from src.core.face_alignment import FaceAlignment
 
@@ -37,7 +37,7 @@ def args() :
 
 
 def test(args) :
-    FACE_CACHE.load()
+    FACE_FEATURE_CACHE.load()
     imgpath = input_face(args.camera)
 
     face_detection = FaceDetection()

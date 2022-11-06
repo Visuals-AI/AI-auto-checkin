@@ -7,7 +7,7 @@ import shutil
 from color_log.clog import log
 from src.bean.t_face_feature import TFaceFeature
 from src.core._face_mediapipe import FaceMediapipe
-from src.cache.face_cache import FACE_CACHE
+from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 from src.config import SETTINGS
 
 
@@ -133,7 +133,7 @@ class FaceDetection(FaceMediapipe) :
             self.sdbc.close()
 
             # 添加到缓存
-            FACE_CACHE.add(cache_data)
+            FACE_FEATURE_CACHE.add(cache_data)
 
         except :
             is_ok = False

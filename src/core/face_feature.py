@@ -6,8 +6,8 @@ import dlib
 from pypdm.dbc._sqlite import SqliteDBC
 from src.dao.t_face_feature import TFaceFeatureDao
 from src.utils.image import get_shape_size
-from src.utils.common import feature_to_str
-from src.cache.face_cache import FACE_CACHE
+from src.utils.common import feature_to_str, face_data_to_bean
+from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 from src.config import SETTINGS
 from color_log.clog import log
 
@@ -78,15 +78,14 @@ class FaceFeature :
         '''
         is_ok = True
         try :
-            # 添加到数据库
+            # 写入数据库
             self.sdbc.conn()
-            cache_data.feature = feature_to_str(feature)
-            self.dao.insert(self.sdbc, cache_data)
+            bean = face_data_to_bean(face_data)
+            self.dao.insert(self.sdbc, bean)
             self.sdbc.close()
 
-            # 添加到缓存
-            FACE_CACHE.add(cache_data)
-
+            # 写入缓存
+            FACE_FEATURE_CACHE.add(bean)
         except :
             is_ok = False
             log.error("保存人脸特征数据到数据库失败")

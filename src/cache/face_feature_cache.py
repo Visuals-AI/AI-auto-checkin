@@ -9,7 +9,7 @@ from src.config import SETTINGS, CHARSET, COORD_SPLIT
 from color_log.clog import log
 
 
-class FaceCache :
+class FaceFeatureCache :
 
     def __init__(self) -> None:
         self.sdbc = SqliteDBC(options=SETTINGS.database)
@@ -70,4 +70,4 @@ class FaceCache :
     
 
 
-FACE_CACHE = FaceCache()
+FACE_FEATURE_CACHE = FaceFeatureCache()

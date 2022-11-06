@@ -61,7 +61,6 @@ def face_data_to_bean(face_data) :
     return bean
 
 
-
 def to_log(desc, array) :
     '''
     把列表内容转换为日志格式（若长度 > 2 则省略中间部分）

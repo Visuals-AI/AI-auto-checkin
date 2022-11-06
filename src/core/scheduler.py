@@ -6,7 +6,7 @@
 from tabnanny import check
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
-from src.cache.face_cache import FACE_CACHE
+from src.cache.face_feature_cache import FACE_FEATURE_CACHE
 from src.core.face_compare import FaceCompare
 from src.core.check_inout import CheckInOut
 from src.core.adb import ADB_CLIENT, adb
@@ -84,7 +84,7 @@ class Scheduler :
 
 
     def _check_task_conditions(self) :
-        if len(FACE_CACHE.id_names) <= 0 :
+        if len(FACE_FEATURE_CACHE.id_names) <= 0 :
             log.warn("[取消打卡] 库存中未录入任何人脸特征值")
             return False
 
