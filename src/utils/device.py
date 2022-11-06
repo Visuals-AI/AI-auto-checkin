@@ -5,8 +5,8 @@
 import cv2
 import mediapipe as mp
 from src.config import SETTINGS
-from src.utils.upload import *
-from src.utils.image import *
+from src.utils.upload import gen_file_id
+from src.utils.image import show_frame, save_frame
 from color_log.clog import log
 
 
@@ -35,7 +35,7 @@ def open_camera(is_face_detection=True, is_face_mesh=False) :
         is_open, mirror_frame = capture.read()
         if not is_open:
             continue
-        
+
         bgr_frame = cv2.flip(mirror_frame, 1)   # 镜像翻转画面
         annotated_frame = _draw_face_label(bgr_frame, face_detection, face_mesh)
         is_exit, is_save = show_frame(annotated_frame, exit_key=EXIT_KEY, save_key=SAVE_KEY)

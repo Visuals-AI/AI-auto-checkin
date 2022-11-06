@@ -12,9 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 # ----------------------------------------------------------------------
 
 import argparse
-from src.utils.device import *
-from src.utils.ui import *
-from src.utils.image import *
+from src.utils.common import input_face
 from src.cache.face_cache import FACE_CACHE
 from src.core.face_detection import FaceDetection
 from src.core.face_alignment import FaceAlignment
@@ -38,12 +36,9 @@ def args() :
     return parser.parse_args()
 
 
-def main(arg) :
+def test(args) :
     FACE_CACHE.load()
-    if arg.camera :
-        imgpath = open_camera()
-    else :
-        imgpath = open_window_by_select_one(title="请选择需要检测的人脸")
+    imgpath = input_face(args.camera)
 
     face_detection = FaceDetection()
     face_data = face_detection.handle(imgpath, True)
@@ -53,4 +48,4 @@ def main(arg) :
 
 
 if '__main__' == __name__ :
-    main(args())
+    test(args())

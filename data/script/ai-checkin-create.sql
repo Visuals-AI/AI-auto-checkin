@@ -3,9 +3,10 @@ CREATE TABLE IF NOT EXISTS `t_face_feature` (
   `s_image_id`              TEXT(64),
   `s_name`                  TEXT(128),
   `f_feature`               TEXT,
-  `s_original_image_path`   TEXT(512),
-  `s_feature_image_path`    TEXT(512),
-  `挂靠的标准脸`
+  `s_align_size`            TEXT(32),
+  `s_mesh_image_path`       TEXT(512),
+  `s_alignment_image_path`  TEXT(512),
+  `s_detection_image_path`  TEXT(512)
 );
 
 

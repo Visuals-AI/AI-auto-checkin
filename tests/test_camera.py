@@ -12,8 +12,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 # ----------------------------------------------------------------------
 
 import argparse
-from src.utils.device import *
-from src.utils.image import *
+from src.utils.device import open_camera
+from src.utils.image import del_image
 from color_log.clog import log
 
 
@@ -36,11 +36,10 @@ def args() :
     return parser.parse_args()
 
 
-def main(arg) :
-    imgpath = open_camera(arg.detection, arg.mesh)
+def main(args) :
+    imgpath = open_camera(args.detection, args.mesh)
     log.info(imgpath)
     del_image(imgpath)
-
 
 
 if '__main__' == __name__ :

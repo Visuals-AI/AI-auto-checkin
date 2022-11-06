@@ -10,8 +10,10 @@ class TFaceFeature :
     s_image_id = "s_image_id"
     s_name = "s_name"
     f_feature = "f_feature"
-    s_original_image_path = "s_original_image_path"
-    s_feature_image_path = "s_feature_image_path"
+    s_align_size = "s_align_size"
+    s_mesh_image_path = "s_mesh_image_path"
+    s_alignment_image_path = "s_alignment_image_path"
+    s_detection_image_path = "s_detection_image_path"
 
 
     def __init__(self) :
@@ -19,8 +21,10 @@ class TFaceFeature :
         self.image_id = None
         self.name = None
         self.feature = None
-        self.original_image_path = None
-        self.feature_image_path = None
+        self.align_size = None
+        self.mesh_image_path = None
+        self.alignment_image_path = None
+        self.detection_image_path = None
 
 
     def params(self) :
@@ -28,8 +32,10 @@ class TFaceFeature :
             self.image_id,
             self.name,
             self.feature,
-            self.original_image_path,
-            self.feature_image_path,
+            self.align_size,
+            self.mesh_image_path,
+            self.alignment_image_path,
+            self.detection_image_path,
         )
 
 
@@ -41,8 +47,10 @@ class TFaceFeature :
                 "    %s = %s" % (self.s_image_id, self.image_id),
                 "    %s = %s" % (self.s_name, self.name),
                 "    %s = %s" % (self.f_feature, self.feature),
-                "    %s = %s" % (self.s_original_image_path, self.original_image_path),
-                "    %s = %s" % (self.s_feature_image_path, self.feature_image_path),
+                "    %s = %s" % (self.s_align_size, self.align_size),
+                "    %s = %s" % (self.s_mesh_image_path, self.mesh_image_path),
+                "    %s = %s" % (self.s_alignment_image_path, self.alignment_image_path),
+                "    %s = %s" % (self.s_detection_image_path, self.detection_image_path),
                 '}\n'
             )
         )

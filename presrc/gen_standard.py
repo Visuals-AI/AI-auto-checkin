@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 # ----------------------------------------------------------------------
 
 import argparse
-from src.utils.ui import *
+from src.utils.common import input_face
 from src.core.face_detection import FaceDetection
 from src.config import SETTINGS, CHARSET, COORD_SPLIT
 from color_log.clog import log
@@ -34,11 +34,8 @@ def args() :
     return parser.parse_args()
 
 
-def main(arg) :
-    if arg.camera :
-        pass    # FIXME
-    else :
-        imgpath = open_window_by_select_one(title="请选择已 PS 完成的标准脸")
+def main(args) :
+    imgpath = input_face(args.camera, title="请选择已 PS 完成的标准脸")
 
     face_detection = FaceDetection()
     face_data = face_detection.handle(imgpath, True)

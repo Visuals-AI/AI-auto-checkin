@@ -77,7 +77,7 @@ def show_image(image, exit_key='q', title='Preview Image') :
         log.warn("绘制图像失败")
 
 
-def show_frame(frame, exit_key='q', save_key='s', title='Preview Image') :
+def show_frame(frame, exit_key='q', save_key='s', title='Preview') :
     '''
     绘制视频流的某一帧（依赖外部不断迭代绘制每一帧）
     [params] frame: 要绘制的帧

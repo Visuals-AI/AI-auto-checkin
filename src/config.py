@@ -59,7 +59,7 @@ class Config :
 
                 self.dlib = context.get('dlib')
                 self.dlib_model_dir = self.dlib.get('model_dir')
-                dlib_model = context.get('model')
+                dlib_model = self.dlib.get('model')
                 self.dlib_detection = dlib_model.get('detection')
                 self.dlib_feature = dlib_model.get('feature')
 

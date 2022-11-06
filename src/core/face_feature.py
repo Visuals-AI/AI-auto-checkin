@@ -4,7 +4,11 @@
 
 import dlib
 import numpy as np
-from src.utils.image import *
+from pypdm.dbc._sqlite import SqliteDBC
+from src.dao.t_face_feature import TFaceFeatureDao
+from src.utils.image import get_shape_size
+from src.cache.face_cache import FACE_CACHE
+from src.config import SETTINGS
 from color_log.clog import log
 
 
@@ -28,6 +32,9 @@ class FaceFeature :
         # 人脸编码模型（提取特征值）
         feature_model = '%s/%s' % (SETTINGS.dlib_model_dir, SETTINGS.dlib_feature)
         self.fr = dlib.face_recognition_model_v1(feature_model)
+
+        self.sdbc = SqliteDBC(options=SETTINGS.database)
+        self.dao = TFaceFeatureDao()
     
     
     def handle(self, warped_frame) :
@@ -36,14 +43,51 @@ class FaceFeature :
         [params] warped_frame: 人脸对齐的图像
         [return]: 人脸特征值
         '''
+        feature = None
+        if warped_frame is not None :
+            try :
+                feature = self._calculate_feature(warped_frame)
+            except :
+                log.error("计算人脸特征值失败")
+        return list(feature)
+
+
+    def _calculate_feature(self, frame) :
+        '''
+        计算人脸特征值
+        [params] frame: 人脸对齐的图像
+        [return] 人脸特征值
+        '''
         # 把 mediapipe 的地标转为 dlib.rectangle 对象
-        x_end, y_end = get_shape_size(warped_frame)
+        x_end, y_end = get_shape_size(frame)
         box = dlib.rectangle(0, 0, x_end, y_end)    # 这里设定计算特征的方框范围，但因为 mediapipe 已经提取过了，所以方框圈了整个图像
-        shape = self.sp(warped_frame, box)
+        shape = self.sp(frame, box)
 
-        # 输入 dlib 神经网络，计算 128 位人脸特征值（mediapipe 不提供特征值计算方法）
-        face_feature = self.fr.compute_face_descriptor(warped_frame, shape)
-        face_feature_matrix = np.array(face_feature)
-        return face_feature_matrix
+        # 输入 dlib 神经网络，计算 128 维人脸特征值（mediapipe 不提供特征值计算方法）
+        feature = self.fr.compute_face_descriptor(frame, shape)
+        return feature
 
+
+    def _save_feature(self, feature, cache_data) :
+        '''
+        保存人脸数据
+        [params] feature: 人脸特征值
+        [params] cache_data: 人脸缓存数据
+        [return] 是否保存成功
+        '''
+        is_ok = True
+        try :
+            # 添加到数据库
+            self.sdbc.conn()
+            cache_data.feature = self._feature_to_str(feature)
+            self.dao.insert(self.sdbc, cache_data)
+            self.sdbc.close()
+
+            # 添加到缓存
+            FACE_CACHE.add(cache_data)
+
+        except :
+            is_ok = False
+            log.error("保存人脸特征数据到数据库失败")
+        return is_ok
         
