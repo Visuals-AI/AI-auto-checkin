@@ -55,7 +55,7 @@ class Config :
                 self.standard_dir = self.mediapipe.get('standard_dir')
                 self.standard_face = self.mediapipe.get('standard_face')
                 swh = self.standard_face.split('x')
-                self.alignment_resize = (int(swh[0]), int(swh[1]))
+                self.alignment_resize = (int(swh[0].strip()), int(swh[1].strip()))
 
                 self.dlib = context.get('dlib')
                 self.dlib_model_dir = self.dlib.get('model_dir')
