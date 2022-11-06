@@ -13,11 +13,12 @@
 
 ## 0x10 项目说明
 
-相信很多人都有上下班忘记考勤签到的问题，此项目就是为了解决这个问题。
+相信很多人都有上下班忘记考勤签到的问题，此项目结合 [Mediapipe](https://mediapipe.dev/) 可以有效解决这个问题：
 
-只要在 PC 运行此程序，即可通过 PC 摄像头进行 AI 人脸识别；只要 AI 判定是本人，就能够用 ADB 触发手机上的考勤 APP 进行自动打卡。
+- 只要在 PC 运行此程序，即可通过 PC 摄像头进行 AI 人脸识别
+- 若 AI 判定是本人，就能够用 ADB 触发手机上的考勤 APP 进行自动打卡。
 
-> 使用 ADB 能支持大部分 Android 的考勤程序
+> 使用 ADB 能确保支持大部分 Android 的考勤程序
 
 
 ## 0x20 程序原理
@@ -46,7 +47,7 @@ sequenceDiagram
     end
 ```
 
-> 理论上不需要人脸识别也能使用，但安全性会大大降低，毕竟万一不在工位时、手机被 ADB 解锁就 GG 了 ...
+> 理论上不需要人脸识别也能使用，但安全性会大大降低，毕竟万一不在工位时、手机又被 ADB 解锁 ...
 
 
 ## 0x30 硬件接线
@@ -79,8 +80,6 @@ TODO
 
 ### 0x52 预操作：安装 ADB
 
-如果已经安装了 [ADB](https://developer.android.com/studio/command-line/adb?hl=zh-cn) 则无需重新安装了。
-
 Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
 
 - Windows:  【[Google 下载](https://dl.google.com/android/repository/platform-tools-latest-windows.zip)】【[Github 下载](./adb/platform-tools_r33.0.3-windows.zip)】
@@ -88,6 +87,8 @@ Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
 - Linux:  【[Google 下载](https://dl.google.com/android/repository/platform-tools-latest-linux.zip)】【[Github 下载](./adb/platform-tools_r33.0.3-linux.zip)】
 
 下载并解压后，配置 ADB 环境变量、即可连接到手机，详细可参考《[ADB 连接手机教程](TODO)》。
+
+> 如果已经安装了 [ADB](https://developer.android.com/studio/command-line/adb?hl=zh-cn) 环境则无需重新安装了，测试命令: `adb --version`
 
 
 ### 0x53 预操作：设置标准脸 
