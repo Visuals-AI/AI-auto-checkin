@@ -65,7 +65,7 @@ sequenceDiagram
 
 ## 0x40 实机演示
 
-TODO
+![](./imgs/04.gif)
 
 
 ## 0x50 使用步骤
