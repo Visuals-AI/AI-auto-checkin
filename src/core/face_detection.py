@@ -30,8 +30,8 @@ class FaceDetection :
         # 导入人脸检测模块
         self.mp_face_detection = mp.solutions.face_detection
         self.face_detection = self.mp_face_detection.FaceDetection(
-            model_selection = 0, 
-            min_detection_confidence = 0.5
+            model_selection = model_selection, 
+            min_detection_confidence = min_detection_confidence
         )
     
     
