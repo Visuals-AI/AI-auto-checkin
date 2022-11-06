@@ -6,7 +6,7 @@ import cv2
 import mediapipe as mp
 from src.cache.face_data import FaceData
 from src.utils.upload import upload
-from src.utils.image import LabelColor, get_shape_size, show_image, save_image
+from src.utils.image import LabelColor, get_shape_size, show_image, save_image, del_image
 from src.config import SETTINGS
 from color_log.clog import log
 

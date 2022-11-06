@@ -9,12 +9,12 @@ app:
 
 
 scheduler:                      # 定时任务
-  work_time: 600                # 要求工作时长（分钟），默认为 8+2 小时（算上午休时间）
+  work_time: 540                # 要求工作时长（分钟），默认为 8+1.5 小时（算上午休时间）
   checkin:                      # 上班卡
     begin_at: 9                 # 开始时间（小时）
     end_at: 11                  # 结束时间（小时）
     interval: 5                 # 重试间隔（分钟）
-  checkout:                     # 下班卡
+  checkout:                     # 下班卡（注意：时间不能和上班卡有交集）
     begin_at: 18                # 开始时间
     end_at: 23                  # 结束时间
     interval: 5                 # 重试间隔（分钟）
