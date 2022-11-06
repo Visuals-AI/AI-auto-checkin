@@ -1,4 +1,4 @@
-# AI-auto-checkin
+# AI-Auto-Checkin
 
 > AI 自动考勤
 
@@ -70,7 +70,15 @@ TODO
 
 ## 0x50 使用步骤
 
-### 0x51 预操作：设置标准脸 
+### 0x51 预操作：安装依赖
+
+1. 安装 [Python 3.8](https://www.python.org/downloads/release/python-385/)
+2. 执行命令 `python -m pip install -r requirements.txt`
+
+> 若 [dlib](http://dlib.net/) 安装失败，可能需要重新安装 [CMake](https://cmake.org/)
+
+
+### 0x52 预操作：设置标准脸 
 
 标准脸，即用于人脸识别过程中、对齐五官坐标的脸，是类似参考系一般的存在。
 
@@ -91,7 +99,7 @@ TODO
 > 此项目已预生成了一张**标准正脸**数据，如果使用场景需要**标准侧脸**，建议重新设置
 
 
-### 0x52 预操作：建库
+### 0x53 预操作：建库
 
 1. 执行命令 `python ./presrc/gen_pdm.py`
 2. 如无异常即创建 sqlite3 成功
@@ -99,5 +107,5 @@ TODO
 > 数据库只需要创建一次，主要用于存储【你】的人脸特征值
 
 
-### 0x53 预操作：录入【你】的人脸特征
+### 0x54 预操作：录入【你】的人脸特征
 
