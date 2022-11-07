@@ -65,7 +65,7 @@ sequenceDiagram
 
 ## 0x40 实机演示
 
-![](./imgs/04.gif)
+![](./imgs/Demo-AI-Auto-Checkin.gif)
 
 
 ## 0x50 使用步骤

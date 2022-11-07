@@ -10,22 +10,22 @@ from src.utils.upload import gen_file_id
 from src.utils.image import show_frame, save_frame
 from color_log.clog import log
 
-
 EXIT_KEY = 'q'          # 退出 CV 绘制窗口的按键
 SAVE_KEY = 's'          # 保存 CV 绘制窗口的按键
 
 
-def open_camera(show_video=True, is_face_detection=True, is_face_mesh=False) :
+def open_camera(display=True, is_face_detection=True, is_face_mesh=False, video_path='') :
     '''
     开启摄像头拍摄人像
-    [params] show_video: 是否在前台实时显示摄像头画面
+    [params] display: 是否在前台实时显示摄像头画面
     [params] is_face_detection: 拍摄时是否开启人脸方框检测
     [params] is_face_mesh: 拍摄时是否开启人脸网格检测
+    [params] video_path: 视频路径（当路径为空时打开摄像头，否则加载视频）
     [return] : 拍摄的图像路径; 没有拍摄则返回 None
     '''
     imgpath = None
-    face_detection, face_mesh = _init_face_model(show_video, is_face_detection, is_face_mesh)
-    capture = _init_camera()
+    face_detection, face_mesh = _init_face_model(display, is_face_detection, is_face_mesh)
+    capture = _init_capture(video_path)
     is_open = capture.isOpened()
     if is_open :
         log.info(f'加载摄像头的数据流成功（按 <{EXIT_KEY}> 退出，按 <{SAVE_KEY}> 保存）')
@@ -38,10 +38,12 @@ def open_camera(show_video=True, is_face_detection=True, is_face_mesh=False) :
         is_open, mirror_frame = capture.read()
         if not is_open:
             continue
-        bgr_frame = cv2.flip(mirror_frame, 1)   # 镜像翻转画面
+        bgr_frame = mirror_frame \
+                    if video_path else \
+                    cv2.flip(mirror_frame, 1)   # 如果是摄像头，需要翻转镜像画面
 
         # 前台：手动保存人脸
-        if show_video :
+        if display :
             annotated_frame, is_found_face = _draw_face_label(bgr_frame, face_detection, face_mesh)
             is_exit, is_save = show_frame(annotated_frame, exit_key=EXIT_KEY, save_key=SAVE_KEY)
             if is_exit :
@@ -69,9 +71,30 @@ def open_camera(show_video=True, is_face_detection=True, is_face_mesh=False) :
     return imgpath
 
 
+def _init_capture(video_path) :
+    '''
+    初始化设备
+    [params] video_path: 视频路径（当路径为空时打开摄像头，否则加载视频）
+    [return] : capture 对象
+    '''
+    return _init_video(video_path) if video_path else _init_camera()
+
+
+def _init_video(video_path) :
+    '''
+    初始化视频流
+    [params] video_path: 视频路径
+    [return] : capture 对象
+    '''
+    log.info(f'正在打开视频文件: {video_path}')
+    capture = cv2.VideoCapture(video_path)
+    return capture
+
+
 def _init_camera() :
     '''
     初始化摄像头
+    [return] : capture 对象
     '''
     log.info(f'正在打开视频设备（索引号={SETTINGS.dev_idx}） ...')
     capture = cv2.VideoCapture(SETTINGS.dev_idx)    # 初始化设备时间较长
@@ -88,10 +111,10 @@ def _init_camera() :
     return capture
 
 
-def _init_face_model(show_video, is_face_detection, is_face_mesh) :
+def _init_face_model(display, is_face_detection, is_face_mesh) :
     '''
     初始化人脸检测模块
-    [params] show_video: 是否在前台实时显示摄像头画面
+    [params] display: 是否在前台实时显示摄像头画面
     [params] face_detection: 拍摄时是否开启人脸方框检测
     [params] face_mesh: 拍摄时是否开启人脸网格检测
     [return] : (face_detection, face_mesh)
@@ -106,7 +129,7 @@ def _init_face_model(show_video, is_face_detection, is_face_mesh) :
     face_mesh = None
 
     # 当摄像头在后台时，若 mesh 没开启
-    if not show_video and not is_face_mesh: 
+    if not display and not is_face_mesh: 
         is_face_detection = True    # 则至少把 detection 打开
 
     # 导入人脸检测模块
