@@ -8,16 +8,21 @@ from tkinter import filedialog
 
 
 # 定义文件对话框会显示的文件类型
-FILETYPE = [
-    ('all files', '.*'), 
+IMAGE_FILETYPES = [
     ('image files', '.jpg'), 
     ('image files', '.jpeg'), 
     ('image files', '.png'), 
-    ('image files', '.bpm')
+    ('image files', '.bpm'), 
+    ('all files', '.*'), 
+]
+
+VIDEO_FILETYPES = [
+    ('image files', '.mp4'), 
+    ('all files', '.*'), 
 ]
 
 
-def open_window_by_select_one(title="Please select one file:") :
+def open_window_by_select_one(title="Please select one file:", filetypes=IMAGE_FILETYPES) :
     '''
     打开系统选择文件窗口（选择一个文件）
     [params] title: 窗口标题
@@ -28,13 +33,13 @@ def open_window_by_select_one(title="Please select one file:") :
     filepath = filedialog.askopenfilename(
         initialdir = os.getcwd(),
         title = title,
-        filetypes = FILETYPE
+        filetypes = filetypes
     )
     tk.destroy()      # 销毁 tk 窗体
     return filepath
 
 
-def open_window_by_select_multi(title="Please select one or more files:") :
+def open_window_by_select_multi(title="Please select one or more files:", filetypes=IMAGE_FILETYPES) :
     '''
     打开系统选择文件窗口（选择多个文件）
     [params] title: 窗口标题
@@ -45,7 +50,7 @@ def open_window_by_select_multi(title="Please select one or more files:") :
     filepaths = filedialog.askopenfilenames(
         initialdir = os.getcwd(),
         title = title,
-        filetypes = FILETYPE
+        filetypes = filetypes
     )
     tk.destroy()      # 销毁 tk 窗体
     return filepaths

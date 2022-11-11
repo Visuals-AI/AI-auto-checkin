@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 # ----------------------------------------------------------------------
 
 import argparse
-from src.utils.ui import open_window_by_select_one
+from src.utils.ui import open_window_by_select_one, VIDEO_FILETYPES
 from src.utils.device import open_camera
 from src.utils.image import del_image
 from color_log.clog import log
@@ -38,7 +38,7 @@ def args() :
 
 
 def test(args) :
-    video_path = open_window_by_select_one('请选择测试视频')
+    video_path = open_window_by_select_one('请选择测试视频', VIDEO_FILETYPES)
     imgpath = open_camera(True, args.detection, args.mesh, video_path)
     log.info(imgpath)
     del_image(imgpath)
