@@ -142,7 +142,7 @@ Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
     - `wait <second>`: 点击后等待多少秒生效
 4. 用这两种命令模拟手动打卡的全过程即可:
 
-![](./imgs/05.png)
+![](./imgs/04.png)
 
 <details>
 <summary><b>查看手机坐标方法</b></summary>

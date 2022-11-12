@@ -84,27 +84,3 @@ DingDing:
   lock_screen:                          # 锁屏
     - "input keyevent 223"
 
-GT:
-  unlock_screen:                        # 解锁屏幕步骤
-    - "input keyevent 224"              # 步骤 1: 唤醒屏幕
-    - "wait 2"
-    - "input swipe 300 1000 300 500"    # 步骤 2: 滑动屏幕，调出密码输入
-    - "wait 2"
-    - "input text <password>"           # 步骤 3: 输入锁屏密码
-    - "wait 2"
-    - "input keyevent 3"                # 步骤 4: 返回首页
-    - "wait 2"
-  open_app:                             # 打开用于签到的 APP 步骤
-    - "input tap 411 1387"              # 步骤 1: 点击 APP 分组坐标
-    - "wait 3"
-    - "input tap 800 706"               # 步骤 2: 点击【GT】应用坐标
-    - "wait 7"
-  check_in:                             # 签到步骤
-    - "input tap 543 2051"              # 步骤 1: 点击【应用】按钮坐标
-    - "wait 3"
-    - "input tap 896 849"               # 步骤 2: 点击【去打卡】按钮坐标（第一次可能会触发 GPS 检查，多点一次）
-    - "wait 5"
-    - "input tap 896 849"               # 步骤 2: 点击【去打卡】按钮坐标
-    - "wait 5"
-  lock_screen:                          # 锁屏
-    - "input keyevent 223"
