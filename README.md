@@ -86,7 +86,7 @@ Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
 - Mac:  【[Google 下载](https://dl.google.com/android/repository/platform-tools-latest-darwin.zip)】【[Github 下载](./adb/platform-tools_r33.0.3-darwin.zip)】
 - Linux:  【[Google 下载](https://dl.google.com/android/repository/platform-tools-latest-linux.zip)】【[Github 下载](./adb/platform-tools_r33.0.3-linux.zip)】
 
-下载并解压后，配置 ADB 环境变量、即可连接到手机，详细可参考《[ADB 连接手机教程](TODO)》。
+下载并解压后，配置 ADB 环境变量、即可连接到手机，详细可参考《[ADB 连接手机教程](https://exp-blog.com/tools/adb-jie-suo-shou-ji-zhi-yin/)》。
 
 > 如果已经安装了 [ADB](https://developer.android.com/studio/command-line/adb?hl=zh-cn) 环境则无需重新安装了，测试命令: `adb --version`
 

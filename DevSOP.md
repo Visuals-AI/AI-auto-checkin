@@ -6,14 +6,6 @@
 
 
 
-adb：连接华为手机 https://cto.eguidedog.net/node/609
-adb 无线： https://blog.csdn.net/ai_qh77/article/details/123383801
-adb： error: device unauthorized. https://stackoverflow.com/questions/23081263/adb-android-device-unauthorized
-adb 指令： https://www.cnblogs.com/botoo/p/9655798.html?share_token=bc2d44e1-e6d5-40fd-9890-7c6b8eebc8ed
- 
-*#*#2846579#*#*
-
-
 
 ```shell
 # 进入 shell (可以不进入)
