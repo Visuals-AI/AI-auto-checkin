@@ -1,6 +1,6 @@
 # AI-Auto-Checkin
 
-> AI 自动考勤
+> AI 人脸识别自动考勤
 
 ------
 
