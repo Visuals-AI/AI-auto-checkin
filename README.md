@@ -8,6 +8,8 @@
 
 ![](https://img.shields.io/badge/Windows-x64-brightgreen.svg) ![](https://img.shields.io/badge/Mac-x64-brightgreen.svg) ![](https://img.shields.io/badge/Linux-x64-brightgreen.svg)
 
+![](https://img.shields.io/badge/Android-Any-blue.svg)
+
 ![](https://img.shields.io/badge/Python-3.8-red.svg)
 
 
