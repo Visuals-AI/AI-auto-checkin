@@ -18,9 +18,9 @@
 相信很多人都有上下班忘记考勤签到的问题，此项目结合 [Mediapipe](https://mediapipe.dev/) 可以有效解决这个问题：
 
 - 只要在 PC 运行此程序，即可通过 PC 摄像头进行 AI 人脸识别
-- 若 AI 判定是本人，就能够用 ADB 触发手机上的考勤 APP 进行自动打卡。
+- 若 AI 判定是本人，就能够用 ADB （支持大部分 Android）触发手机上的考勤 APP 进行自动打卡
 
-> 使用 ADB 能确保支持大部分 Android 的考勤程序
+> 配套文档 《[AI 全自动考勤原理与实现](https://exp-blog.com/deeplearn/ai-quan-zi-dong-kao-qin-yuan-li-yu-shi-xian/)》
 
 
 ## 0x20 程序原理
@@ -185,3 +185,4 @@ Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
 
 - 《[开发者资料](./docs/DevSOP.md)》
 - 《[单元测试](./tests/)》
+

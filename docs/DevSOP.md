@@ -20,7 +20,6 @@
 | 特征比对 (Face Compare) | 计算两个特征向量的欧氏距离，得到人脸的相似度 | [numpy](https://numpy.org/) |
 
 
-
 ## 0xF0 参考资料
 
 ### 0xF1 入门大纲
