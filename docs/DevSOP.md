@@ -13,9 +13,9 @@
 |:---|:---|:---|
 | 人脸采集 (Face Collect) | 任意摄像头或照片均可，提前录入标准人脸，用于后续比对 | [opencv](https://opencv.org/) |
 | 人脸检测 (Face Detection) | 涵盖了关键点检测，推荐用开源工具实现 | [mediapipe](https://google.github.io/mediapipe/) |
-| 特征定位 | 通常合并到人脸检测一起得到各个特征的地标 | - |
+| 特征定位 (Feature Landmarks) | 通常合并到人脸检测一起得到各个特征的地标 | - |
 | 人脸对齐 (Face Alignment) | 通过仿射矩阵对人脸进行旋转/平移/缩放处理，使得人脸的角度/位置/距离尽可能贴近标准脸 | [numpy](https://numpy.org/) |
-| 活体检测 | 这里不涉及 | - |
+| 活体检测 (Living Detection) | 这里不涉及 | - |
 | 特征提取 (Face Feature) | 把人脸各个特征点归一化、输入神经网络进行 Embedding，得到一个 n 维的特征向量 | [dlib](https://github.com/davisking/dlib) |
 | 特征比对 (Face Compare) | 计算两个特征向量的欧氏距离，得到人脸的相似度 | [numpy](https://numpy.org/) |
 
