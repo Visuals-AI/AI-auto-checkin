@@ -183,5 +183,5 @@ Google 提供了无需安装 Android Studio SDK 的 ADB 版本：
 
 ## 0x60 开发者文档
 
-- 《[开发者指引](./docs/DevSOP.md)》
+- 《[开发者资料](./docs/DevSOP.md)》
 - 《[单元测试](./tests/)》
