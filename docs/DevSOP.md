@@ -67,8 +67,7 @@
 
 ### 0xFF 其他
 
+- Mediapipe 演示视频：《[Live Perception for Mobile and Web (ECCV 16th Embedded Vision Workshop)](https://www.youtube.com/watch?v=V9CiJhHQKkc)》
 - 《[Mac 安装 dlib 记录](https://blog.csdn.net/Robin_Pi/article/details/119909829)》
 - 《[使用 opencv 在视频上添加文字和标记框](https://blog.csdn.net/weixin_30852419/article/details/97603572)》
-- 《[Python 实现定时任务的八种方案](https://cloud.tencent.com/developer/article/1887717)》
-- 《[Python 定时任务框架 APScheduler 详解](https://www.cnblogs.com/leffss/p/11912364.html)》
 
